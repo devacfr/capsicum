@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+	 project-version="6">
+	<property name="defaultPackage" value="org.cfr.capsicum.propertyset"/>
+	<db-entity name="PROPERTY_SET_ITEM">
+		<db-attribute name="ENTITY_ID" type="BIGINT"/>
+		<db-attribute name="ENTITY_NAME" type="VARCHAR" length="255"/>
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PROPERTY_KEY" type="VARCHAR" length="255"/>
+		<db-attribute name="PROPERTY_TYPE" type="INTEGER"/>
+		<db-attribute name="VALUE_BOOLEAN" type="BOOLEAN"/>
+		<db-attribute name="VALUE_DATA" type="BLOB"/>
+		<db-attribute name="VALUE_DATE" type="TIMESTAMP"/>
+		<db-attribute name="VALUE_DECIMAL" type="DECIMAL" length="18" scale="6"/>
+		<db-attribute name="VALUE_NUMBER" type="BIGINT"/>
+		<db-attribute name="VALUE_STRING" type="LONGVARCHAR" length="2000"/>
+	</db-entity>
+	<obj-entity name="PropertySetItem" className="org.cfr.capsicum.propertyset.PropertySetItem" dbEntityName="PROPERTY_SET_ITEM">
+		<obj-attribute name="entityId" type="java.lang.Long" db-attribute-path="ENTITY_ID"/>
+		<obj-attribute name="entityName" type="java.lang.String" db-attribute-path="ENTITY_NAME"/>
+		<obj-attribute name="propertyKey" type="java.lang.String" db-attribute-path="PROPERTY_KEY"/>
+		<obj-attribute name="propertyType" type="java.lang.Integer" db-attribute-path="PROPERTY_TYPE"/>
+		<obj-attribute name="valueBoolean" type="java.lang.Boolean" db-attribute-path="VALUE_BOOLEAN"/>
+		<obj-attribute name="valueData" type="byte[]" db-attribute-path="VALUE_DATA"/>
+		<obj-attribute name="valueDate" type="java.util.Date" db-attribute-path="VALUE_DATE"/>
+		<obj-attribute name="valueDecimal" type="java.math.BigDecimal" db-attribute-path="VALUE_DECIMAL"/>
+		<obj-attribute name="valueNumber" type="java.lang.Long" db-attribute-path="VALUE_NUMBER"/>
+		<obj-attribute name="valueString" type="java.lang.String" db-attribute-path="VALUE_STRING"/>
+	</obj-entity>
+</data-map>

@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>capsicum-parent</artifactId>
+        <groupId>org.cfr.capsicum</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>capsicum-propertyset</artifactId>
+    <name>Capsicum PropertySet Module</name>
+    <description>This module allows to use framework propertyset with Capsicum</description>
+    <packaging>jar</packaging>
+    
+    <properties>
+        <main.basedir>${project.parent.basedir}</main.basedir>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.cfr.capsicum</groupId>
+            <artifactId>capsicum-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>opensymphony</groupId>
+            <artifactId>propertyset</artifactId>
+        </dependency>        
+        <!--  used by propertyset : missing dependency -->
+        <dependency>
+            <groupId>opensymphony</groupId>
+            <artifactId>oscore</artifactId>
+        </dependency>
+
+
+        <!-- Testing dependency -->
+        <dependency>
+            <groupId>org.cfr.capsicum</groupId>
+            <artifactId>capsicum-testing</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+</project>
