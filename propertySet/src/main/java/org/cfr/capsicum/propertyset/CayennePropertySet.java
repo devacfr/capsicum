@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 devacfr<christophefriederich@mac.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.cfr.capsicum.propertyset;
 
 import java.io.IOException;
@@ -82,8 +97,10 @@ public class CayennePropertySet extends AbstractPropertySet {
             // lets see if we need to use a configurationProvider from a class
             configProvider = new CayenneRuntimeContextProvider();
             configProvider.setup(new ImmutableMap.Builder<String, Object>().putAll(config)
-                    .put(ICayenneConfigurationProvider.DATASOURCE_PROPERTY_KEY, args.get(ICayenneConfigurationProvider.DATASOURCE_PROPERTY_KEY))
-                    .put(ICayenneConfigurationProvider.ADAPTER_PROPERTY_KEY, args.get(ICayenneConfigurationProvider.ADAPTER_PROPERTY_KEY))
+                    .put(ICayenneConfigurationProvider.DATASOURCE_PROPERTY_KEY,
+                        args.get(ICayenneConfigurationProvider.DATASOURCE_PROPERTY_KEY))
+                    .put(ICayenneConfigurationProvider.ADAPTER_PROPERTY_KEY,
+                        args.get(ICayenneConfigurationProvider.ADAPTER_PROPERTY_KEY))
                     .build());
             ///CLOVER:ON
         } else {
@@ -125,7 +142,8 @@ public class CayennePropertySet extends AbstractPropertySet {
         if (item == null) {
             item = configProvider.getPropertySetDAO().create(entityName, entityId.longValue(), key);
         } else if (item.getPropertyType().intValue() != type) {
-            throw new PropertyException("Existing key '" + key + "' does not have matching type of " + type);
+            throw new PropertyException("Existing key '"
+                    + key + "' does not have matching type of " + type);
         }
 
         switch (type) {
@@ -168,13 +186,15 @@ public class CayennePropertySet extends AbstractPropertySet {
                     item.setValueString(XMLUtils.print((Document) value));
                 } catch (IOException e) {
                     ///CLOVER:OFF
-                    throw new PropertyException("Unexpected error when read xml document: " + e.getMessage());
+                    throw new PropertyException("Unexpected error when read xml document: "
+                            + e.getMessage());
                     ///CLOVER:ON
                 }
                 break;
 
             default:
-                throw new PropertyException("type " + type + " not supported");
+                throw new PropertyException("type "
+                        + type + " not supported");
         }
 
         item.setPropertyType(type);
@@ -191,7 +211,8 @@ public class CayennePropertySet extends AbstractPropertySet {
         }
 
         if (item.getPropertyType() != type) {
-            throw new PropertyException("key '" + key + "' does not have matching type of " + type);
+            throw new PropertyException("key '"
+                    + key + "' does not have matching type of " + type);
         }
 
         switch (type) {
@@ -220,12 +241,14 @@ public class CayennePropertySet extends AbstractPropertySet {
                     return XMLUtils.parse(item.getValueString());
                 } catch (Exception e) {
                     ///CLOVER:OFF
-                    throw new PropertyException("Unexpected error when read xml document from database: " + e.getMessage());
+                    throw new PropertyException("Unexpected error when read xml document from database: "
+                            + e.getMessage());
                     ///CLOVER:ON
                 }
         }
 
-        throw new PropertyException("type " + type + " not supported");
+        throw new PropertyException("type "
+                + type + " not supported");
     }
 
     private PropertySetItem findByKey(String key) throws PropertyException {

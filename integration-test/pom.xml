@@ -9,15 +9,15 @@
     <artifactId>capsicum-integration-test</artifactId>
     <name>Capsicum Integration Testing</name>
     <description>Execute Spring integration testing of Capsicum</description>
-    
+
     <properties>
         <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
-    
+
     <dependencies>
         <dependency>
-            <artifactId>capsicum-testing</artifactId>
             <groupId>org.cfr.capsicum</groupId>
+            <artifactId>capsicum-testing</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -62,35 +62,6 @@
                 <filtering>false</filtering>
             </testResource>
         </testResources>
-        <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse 
-                    m2e settings only. It has no influence on the Maven build itself. -->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.cayenne.plugins</groupId>
-                                        <artifactId>maven-cayenne-plugin</artifactId>
-                                        <versionRange>[3.0,)</versionRange>
-                                        <goals>
-                                            <goal>cgen</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute />
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+        
     </build>
 </project>

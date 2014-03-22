@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 devacfr<christophefriederich@mac.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.cfr.capsicum.test;
 
 import java.io.File;
@@ -87,7 +102,8 @@ public abstract class AbstractCayenneJUnit4DbUnitSpringContextTests extends Abst
         Collection<DbRelationship> relationships = dbEntity.getRelationships();
         if (relationships.size() > 0) {
             for (DbRelationship relationship : relationships) {
-                if (relationship.isToMany() && !dbEntity.equals(relationship.getTargetEntity())) {
+                if (relationship.isToMany()
+                        && !dbEntity.equals(relationship.getTargetEntity())) {
                     addTableName(tables, (DbEntity) relationship.getTargetEntity());
                 }
             }
@@ -191,8 +207,8 @@ public abstract class AbstractCayenneJUnit4DbUnitSpringContextTests extends Abst
     protected IDataSet getDatabaseDataSet(IDatabaseConnection connection, String[] tables, boolean forwardonly)
             throws DatabaseUnitException {
         if (logger.isDebugEnabled()) {
-            logger.debug("getDatabaseDataSet(connection=" + connection + ", tables=" + tables + ", forwardonly="
-                    + forwardonly + ") - start");
+            logger.debug("getDatabaseDataSet(connection="
+                    + connection + ", tables=" + tables + ", forwardonly=" + forwardonly + ") - start");
         }
 
         try {
@@ -209,7 +225,8 @@ public abstract class AbstractCayenneJUnit4DbUnitSpringContextTests extends Abst
             config.setProperty(DatabaseConfig.PROPERTY_RESULTSET_TABLE_FACTORY, factory);
 
             // Retrieve the complete database if no tables or queries specified.
-            if (tables == null || tables.length == 0) {
+            if (tables == null
+                    || tables.length == 0) {
                 return connection.createDataSet();
             }
 
@@ -221,8 +238,9 @@ public abstract class AbstractCayenneJUnit4DbUnitSpringContextTests extends Abst
                 queryDataSet.addTable(item);
             }
 
-            if (queryDataSet.getTableNames().length > 0)
+            if (queryDataSet.getTableNames().length > 0) {
                 queryDataSets.add(queryDataSet);
+            }
 
             IDataSet[] dataSetsArray = new IDataSet[queryDataSets.size()];
             return new CompositeDataSet(queryDataSets.toArray(dataSetsArray));
@@ -266,9 +284,10 @@ public abstract class AbstractCayenneJUnit4DbUnitSpringContextTests extends Abst
     }
 
     protected IDataSet getSrcDataSet(URL url, ProducerType format, boolean forwardonly) throws DatabaseUnitException {
-        if (logger.isDebugEnabled())
-            logger.debug("getSrcDataSet(src=" + url + ", format=" + format + ", forwardonly=" + forwardonly
-                    + ") - start");
+        if (logger.isDebugEnabled()) {
+            logger.debug("getSrcDataSet(src="
+                    + url + ", format=" + format + ", forwardonly=" + forwardonly + ") - start");
+        }
 
         InputStream stream = null;
         if (ResourceUtils.isJarURL(url)) {
@@ -330,8 +349,10 @@ public abstract class AbstractCayenneJUnit4DbUnitSpringContextTests extends Abst
         truncateDataBase();
         for (String fileName : dataSetDBUnit) {
             URL url = ResourceUtils.getURL(fileName);
-            if (logger.isDebugEnabled())
-                logger.debug("loadDataBase(file=" + fileName + ", translate=" + url + ")");
+            if (logger.isDebugEnabled()) {
+                logger.debug("loadDataBase(file="
+                        + fileName + ", translate=" + url + ")");
+            }
             loadDataSet(url);
         }
 

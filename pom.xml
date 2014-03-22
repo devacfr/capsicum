@@ -12,8 +12,9 @@
     </parent>
 
     <name>Framework Cayenne</name>
-    <description>Framework enhance Cayenne project fonctionality</description>
+    <description>Framework enhance Cayenne project</description>
     <packaging>pom</packaging>
+
     <modules>
         <module>core</module>
         <module>testing</module>
@@ -21,11 +22,12 @@
         <module>plugin</module>
         <module>integration-test</module>
     </modules>
+
     <developers>
         <developer>
-            <id>cfriedri</id>
+            <id>devacfr</id>
             <name>Christophe Friederich</name>
-            <email>christophe.friedrich@pmi.com</email>
+            <email>christophefriedrich@mac.com</email>
             <timezone>Europe/Zurich</timezone>
         </developer>
     </developers>
@@ -48,7 +50,9 @@
         <org.cfr.commons.version>1.0.1</org.cfr.commons.version>
 
         <!-- External dependencies versions. -->
-        <dbunit.version>2.4.7</dbunit.version>        
+        <javax.inject.version>1</javax.inject.version>
+        <jsr250.version>1.0</jsr250.version>
+        <dbunit.version>2.4.7</dbunit.version>
         <cayenne.version>3.2M1</cayenne.version>
         <hessian.version>3.1.6</hessian.version>
         <opensymphony-propertyset.version>1.5</opensymphony-propertyset.version>
@@ -70,30 +74,29 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>caucho</id>
+            <url>http://caucho.com/m2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <!-- Test Dependency -->
-        <dependency>
-            <groupId>org.cfr.commons</groupId>
-            <artifactId>commons-testing</artifactId>
-            <version>${org.cfr.commons.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.cfr.commons</groupId>
                 <artifactId>commons-util</artifactId>
+                <version>${org.cfr.commons.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cfr.commons</groupId>
+                <artifactId>commons-testing</artifactId>
                 <version>${org.cfr.commons.version}</version>
             </dependency>
             <dependency>
@@ -129,4 +132,36 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse 
+                    m2e settings only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.cayenne.plugins</groupId>
+                                        <artifactId>maven-cayenne-plugin</artifactId>
+                                        <versionRange>[3.0,)</versionRange>
+                                        <goals>
+                                            <goal>cgen</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

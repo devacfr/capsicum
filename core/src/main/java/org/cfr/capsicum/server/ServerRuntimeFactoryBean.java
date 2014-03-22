@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 devacfr<christophefriederich@mac.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.cfr.capsicum.server;
 
 import java.io.IOException;
@@ -114,7 +129,8 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
     @Override
     public void afterPropertiesSet() throws Exception {
         // check datasource and transaction
-        if (transactionManager == null && dataSource == null) {
+        if (transactionManager == null
+                && dataSource == null) {
             throw new IllegalArgumentException("Property 'transactionManager' or 'dataSource' is required");
         }
 
@@ -126,7 +142,8 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
         }
         SpringServerModule springModule = new SpringServerModule();
         List<String> configurationLocations = ImmutableList.of();
-        if (dataDomainDefinitions != null && !dataDomainDefinitions.isEmpty()) {
+        if (dataDomainDefinitions != null
+                && !dataDomainDefinitions.isEmpty()) {
             configurationLocations = Lists.newArrayListWithCapacity(dataDomainDefinitions.size());
             for (DataDomainDefinition dataDomainDefinition : dataDomainDefinitions) {
                 Assert.notNull(dataDomainDefinition.getName(), "the name of DataDomain is required");
@@ -146,8 +163,9 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
             }
         }
         // create specific datasource Factory
-        if (dataSourceFactory == null)
+        if (dataSourceFactory == null) {
             dataSourceFactory = new SpringDataSourceFactory(this);
+        }
         // create cayenne runtime instance with domain definitions
         cayenneRuntime = new ServerRuntime(Iterables.toArray(configurationLocations, String.class), springModule);
 
@@ -277,8 +295,9 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
     @Override
     public void updateDatabaseSchema() throws SQLException {
         DataDomain domain = getDataDomain();
-        if (domain == null)
+        if (domain == null) {
             return;
+        }
         Collection<DataNode> dataNodes = domain.getDataNodes();
         for (DataNode dataNode : dataNodes) {
             SchemaUpdateStrategy strategy = dataNode.getSchemaUpdateStrategy();
@@ -303,9 +322,8 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
     }
 
     @Override
-    public <T> T
-            execute(final @Nonnull TransactionDefinition transactionDefinition, final TransactionCallback<T> action)
-                    throws TransactionException {
+    public <T> T execute(final @Nonnull TransactionDefinition transactionDefinition, final TransactionCallback<T> action)
+            throws TransactionException {
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager,
                 Assert.notNull(transactionDefinition, "transactionDefinition is required"));
         return transactionTemplate.execute(action);
@@ -362,7 +380,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
      * @return
      */
     public Class<? extends SchemaUpdateStrategy> getDefaultSchemaUpdateStrategy() {
-        return (defaultSchemaUpdateStrategy != null ? defaultSchemaUpdateStrategy : SkipSchemaUpdateStrategy.class);
+        return defaultSchemaUpdateStrategy != null ? defaultSchemaUpdateStrategy : SkipSchemaUpdateStrategy.class;
     }
 
     /**

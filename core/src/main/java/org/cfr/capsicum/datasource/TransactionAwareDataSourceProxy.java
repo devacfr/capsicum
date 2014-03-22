@@ -1,11 +1,11 @@
-/*
- * Copyright 2002-2010 the original author or authors.
+/**
+ * Copyright 2014 devacfr<christophefriederich@mac.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.cfr.capsicum.datasource;
 
 import java.lang.reflect.InvocationHandler;
@@ -156,7 +155,8 @@ public class TransactionAwareDataSourceProxy extends DelegatingDataSource {
      * @param targetDataSource the target DataSource
      */
     protected boolean shouldObtainFixedConnection(DataSource targetDataSource) {
-        return (!TransactionSynchronizationManager.isSynchronizationActive() || !this.reobtainTransactionalConnections);
+        return !TransactionSynchronizationManager.isSynchronizationActive()
+                || !this.reobtainTransactionalConnections;
     }
 
     /**
@@ -182,7 +182,7 @@ public class TransactionAwareDataSourceProxy extends DelegatingDataSource {
 
             if (method.getName().equals("equals")) {
                 // Only considered as equal when proxies are identical.
-                return (proxy == args[0]);
+                return proxy == args[0];
             } else if (method.getName().equals("hashCode")) {
                 // Use hashCode of Connection proxy.
                 return System.identityHashCode(proxy);

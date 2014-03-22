@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 devacfr<christophefriederich@mac.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.cfr.capsicum.support;
 
 import java.sql.Connection;
@@ -14,7 +29,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.cfr.capsicum.ICayenneRuntimeContext;
 
-
 /**
  * 
  * @author devacfr
@@ -22,18 +36,25 @@ import org.cfr.capsicum.ICayenneRuntimeContext;
  */
 public class CountHelper {
 
-    public static <T> long count(ObjectContext context, ICayenneRuntimeContext cayenneRuntimeContext, Class<T> objectClass, SelectQuery<T> query) {
+    public static <T> long count(ObjectContext context,
+                                 ICayenneRuntimeContext cayenneRuntimeContext,
+                                 Class<T> objectClass,
+                                 SelectQuery<T> query) {
         return count(context, cayenneRuntimeContext.getDataDomain(), objectClass, query);
     }
 
-    public static <T> long count(ObjectContext context, DataDomain dataDomain, Class<T> objectClass, SelectQuery<T> query) {
+    public static <T> long count(ObjectContext context,
+                                 DataDomain dataDomain,
+                                 Class<T> objectClass,
+                                 SelectQuery<T> query) {
         CountTranslator translator = new CountTranslator();
 
         ObjEntity objEntity = dataDomain.getEntityResolver().getObjEntity(objectClass);
         DbEntity entity = objEntity.getDbEntity();
 
         if (entity == null) {
-            throw new CayenneRuntimeException("No entity is mapped for java class: " + objectClass.getName());
+            throw new CayenneRuntimeException("No entity is mapped for java class: "
+                    + objectClass.getName());
         }
         DataNode node = dataDomain.lookupDataNode(entity.getDataMap());
 
@@ -82,7 +103,8 @@ public class CountHelper {
             if (ordering > 0) {
                 sql = sql.substring(0, ordering);
             }
-            return "SELECT COUNT(*)" + sql;
+            return "SELECT COUNT(*)"
+                    + sql;
         }
     }
 

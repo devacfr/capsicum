@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 devacfr<christophefriederich@mac.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.cfr.capsicum.configuration;
 
 import java.util.Collection;
@@ -36,7 +51,6 @@ import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cfr.capsicum.access.SpringDataNode;
-
 
 /**
  * A {@link org.apache.cayenne.DataChannel} provider that provides a single instance of DataDomain configured
@@ -170,13 +184,15 @@ public class DataDomainProvider implements Provider<DataDomain> {
      */
     protected DataDomain createAndInitDataDomain() throws Exception {
 
-        if (locations == null || locations.isEmpty()) {
+        if (locations == null
+                || locations.isEmpty()) {
             throw new DataDomainLoadException("No configuration location(s) available");
         }
 
         long t0 = System.currentTimeMillis();
         if (logger.isDebugEnabled()) {
-            logger.debug("starting configuration loading: " + locations);
+            logger.debug("starting configuration loading: "
+                    + locations);
         }
 
         DataChannelDescriptor[] descriptors = new DataChannelDescriptor[locations.size()];
@@ -195,8 +211,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
             // no support for multiple configs yet, but this is not a hard error
             if (configurations.size() > 1) {
-                logger.info("found " + configurations.size() + " configurations for " + location
-                        + ", will use the first one: " + configurationResource.getURL());
+                logger.info("found "
+                        + configurations.size() + " configurations for " + location + ", will use the first one: "
+                        + configurationResource.getURL());
             }
 
             ConfigurationTree<DataChannelDescriptor> tree = loader.load(configurationResource);
@@ -211,7 +228,8 @@ public class DataDomainProvider implements Provider<DataDomain> {
         long t1 = System.currentTimeMillis();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("finished configuration loading in " + (t1 - t0) + " ms.");
+            logger.debug("finished configuration loading in "
+                    + (t1 - t0) + " ms.");
         }
 
         DataChannelDescriptor descriptor = descriptorMerger.merge(descriptors);
@@ -283,7 +301,8 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
 
         if (defaultNode != null) {
-            logger.info("setting DataNode '" + defaultNode.getName() + "' as default, used by all unlinked DataMaps");
+            logger.info("setting DataNode '"
+                    + defaultNode.getName() + "' as default, used by all unlinked DataMaps");
 
             dataDomain.setDefaultNode(defaultNode);
         }

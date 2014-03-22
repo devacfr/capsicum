@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 devacfr<christophefriederich@mac.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.cfr.capsicum.propertyset;
 
 import java.util.List;
@@ -28,8 +43,9 @@ public class CayennePropertySetDAOUtils {
         query.setParameter("entityId", entityId);
         query.setParameter("propertyKey", propertyKey);
         List<PropertySetItem> list = context.performQuery(query);
-        if (list.isEmpty())
+        if (list.isEmpty()) {
             return null;
+        }
         return list.get(0);
     }
 
@@ -38,10 +54,15 @@ public class CayennePropertySetDAOUtils {
     * wrapped by your own session management.
     */
     @SuppressWarnings("unchecked")
-    public static List<String> getKeysImpl(ObjectContext context, String entityName, Long entityId, String prefix, int type) {
+    public static List<String> getKeysImpl(ObjectContext context,
+                                           String entityName,
+                                           Long entityId,
+                                           String prefix,
+                                           int type) {
         EJBQLQuery query;
 
-        if ((prefix != null) && (type > 0)) {
+        if (prefix != null
+                && type > 0) {
             query = new EJBQLQuery(mapQueries.get("all_keys_with_type_like"));
             query.setParameter("propertyKey", prefix + '%');
             query.setParameter("propertyType", type);
