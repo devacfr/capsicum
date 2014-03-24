@@ -28,20 +28,25 @@ import org.apache.cayenne.configuration.web.RequestHandler;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 
+/**
+ * 
+ * @author devacfr<christophefriederich@mac.com>
+ * @since 1.0
+ */
 public class SessionContextRequestHandler implements RequestHandler, ISessionState {
 
     private boolean forceNewSession = true;
 
-    static final String SESSION_CONTEXT_KEY = SessionContextRequestHandler.class.getName()
-            + ".SESSION_CONTEXT";
+    static final String SESSION_CONTEXT_KEY = SessionContextRequestHandler.class.getName() + ".SESSION_CONTEXT";
 
-    // using injector to lookup services instead of injecting them directly for lazy
-    // startup and "late binding"
+    /**
+     * using injector to lookup services instead of injecting them directly for lazy startup and "late binding".
+     */
     @Inject
     private Injector injector;
 
     @Override
-    public void requestStart(ServletRequest request, ServletResponse response) {
+    public void requestStart(final ServletRequest request, final ServletResponse response) {
 
         CayenneRuntime.bindThreadInjector(injector);
 
@@ -68,7 +73,7 @@ public class SessionContextRequestHandler implements RequestHandler, ISessionSta
     }
 
     @Override
-    public void requestEnd(ServletRequest request, ServletResponse response) {
+    public void requestEnd(final ServletRequest request, final ServletResponse response) {
         CayenneRuntime.bindThreadInjector(null);
         BaseContext.bindThreadObjectContext(null);
     }
@@ -79,7 +84,7 @@ public class SessionContextRequestHandler implements RequestHandler, ISessionSta
     }
 
     @Override
-    public void setForceNewSession(boolean forceNewSession) {
+    public void setForceNewSession(final boolean forceNewSession) {
         this.forceNewSession = forceNewSession;
     }
 }

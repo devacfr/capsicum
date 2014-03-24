@@ -33,7 +33,7 @@ import org.cfr.commons.util.Assert;
 
 /**
  * This class allows override  values of {@link DataDomain} configured in xml file.  
- * @author devacfr
+ * @author devacfr<christophefriederich@mac.com>
  * @since 1.0
  * @see DataChannelDescriptorLoader
  */

@@ -23,13 +23,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.annotation.Nonnull;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.datasource.ConnectionProxy;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
-import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
-import org.springframework.jdbc.datasource.UserCredentialsDataSourceAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
@@ -40,17 +38,19 @@ import org.springframework.util.Assert;
  *
  * <p>Data access code that should remain unaware of Spring's data access support
  * can work with this proxy to seamlessly participate in Spring-managed transactions.
- * Note that the transaction manager, for example {@link DataSourceTransactionManager},
+ * Note that the transaction manager, for example
+ * {@link org.springframework.jdbc.datasource.DataSourceTransactionManager},
  * still needs to work with the underlying DataSource, <i>not</i> with this proxy.
  *
  * <p><b>Make sure that TransactionAwareDataSourceProxy is the outermost DataSource
  * of a chain of DataSource proxies/adapters.</b> TransactionAwareDataSourceProxy
  * can delegate either directly to the target connection pool or to some
- * intermediary proxy/adapter like {@link LazyConnectionDataSourceProxy} or
- * {@link UserCredentialsDataSourceAdapter}.
+ * intermediary proxy/adapter like {@link org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy} or
+ * {@link org.springframework.jdbc.datasource.UserCredentialsDataSourceAdapter}.
  *
  * <p>Delegates to {@link DataSourceUtils} for automatically participating in
- * thread-bound transactions, for example managed by {@link DataSourceTransactionManager}.
+ * thread-bound transactions, for example managed by 
+ * {@link org.springframework.jdbc.datasource.DataSourceTransactionManager}.
  * <code>getConnection</code> calls and <code>close</code> calls on returned Connections
  * will behave properly within a transaction, i.e. always operate on the transactional
  * Connection. If not within a transaction, normal DataSource behavior applies.
@@ -97,7 +97,7 @@ public class TransactionAwareDataSourceProxy extends DelegatingDataSource {
      * Create a new TransactionAwareDataSourceProxy.
      * @param targetDataSource the target DataSource
      */
-    public TransactionAwareDataSourceProxy(DataSource targetDataSource) {
+    public TransactionAwareDataSourceProxy(@Nonnull final DataSource targetDataSource) {
         super(targetDataSource);
     }
 
@@ -110,7 +110,7 @@ public class TransactionAwareDataSourceProxy extends DelegatingDataSource {
      * <p>The effect of this setting is similar to the
      * "hibernate.connection.release_mode" value "after_statement".
      */
-    public void setReobtainTransactionalConnections(boolean reobtainTransactionalConnections) {
+    public void setReobtainTransactionalConnections(final boolean reobtainTransactionalConnections) {
         this.reobtainTransactionalConnections = reobtainTransactionalConnections;
     }
 
@@ -122,6 +122,7 @@ public class TransactionAwareDataSourceProxy extends DelegatingDataSource {
      * @return a transactional Connection if any, a new one else
      * @see DataSourceUtils#doGetConnection
      * @see ConnectionProxy#getTargetConnection
+     * @exception SQLException if sql exception appends
      */
     @Override
     public Connection getConnection() throws SQLException {
@@ -138,7 +139,7 @@ public class TransactionAwareDataSourceProxy extends DelegatingDataSource {
      * @see java.sql.Connection#close()
      * @see DataSourceUtils#doReleaseConnection
      */
-    protected Connection getTransactionAwareConnectionProxy(DataSource targetDataSource) {
+    protected Connection getTransactionAwareConnectionProxy(@Nonnull final DataSource targetDataSource) {
         return (Connection) Proxy.newProxyInstance(ConnectionProxy.class.getClassLoader(),
             new Class[] { ConnectionProxy.class },
             new TransactionAwareInvocationHandler(targetDataSource));
@@ -154,9 +155,8 @@ public class TransactionAwareDataSourceProxy extends DelegatingDataSource {
      * Note that non-transactional access will always use a fixed Connection.
      * @param targetDataSource the target DataSource
      */
-    protected boolean shouldObtainFixedConnection(DataSource targetDataSource) {
-        return !TransactionSynchronizationManager.isSynchronizationActive()
-                || !this.reobtainTransactionalConnections;
+    protected boolean shouldObtainFixedConnection(@Nonnull final DataSource targetDataSource) {
+        return !TransactionSynchronizationManager.isSynchronizationActive() || !this.reobtainTransactionalConnections;
     }
 
     /**
@@ -171,13 +171,14 @@ public class TransactionAwareDataSourceProxy extends DelegatingDataSource {
 
         private boolean closed = false;
 
-        public TransactionAwareInvocationHandler(DataSource targetDataSource) {
+        public TransactionAwareInvocationHandler(@Nonnull final DataSource targetDataSource) {
             this.targetDataSource = targetDataSource;
         }
 
         @SuppressWarnings("rawtypes")
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        public Object invoke(@Nonnull final Object proxy, @Nonnull final Method method, @Nonnull final Object[] args)
+                throws Throwable {
             // Invocation on ConnectionProxy interface coming in...
 
             if (method.getName().equals("equals")) {

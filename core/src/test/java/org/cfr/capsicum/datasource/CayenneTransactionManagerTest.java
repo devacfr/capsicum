@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 devacfr<christophefriederich@mac.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.cfr.capsicum.datasource;
 
 import java.sql.Connection;
@@ -15,7 +30,6 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationException;
 import org.apache.cayenne.validation.ValidationResult;
-import org.cfr.capsicum.datasource.CayenneTransactionManager;
 import org.cfr.capsicum.support.CayenneValidationException;
 import org.cfr.commons.testing.EasyMockTestCase;
 import org.junit.Test;
@@ -25,7 +39,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-
 
 public class CayenneTransactionManagerTest extends EasyMockTestCase {
 

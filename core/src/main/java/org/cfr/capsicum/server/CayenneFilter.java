@@ -32,6 +32,11 @@ import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
 
+/**
+ * 
+ * @author devacfr<christophefriederich@mac.com>
+ * @since 1.0
+ */
 public class CayenneFilter extends OncePerRequestFilter implements InitializingBean {
 
     protected ICayenneRuntimeContext cayenneRuntime;
@@ -53,7 +58,7 @@ public class CayenneFilter extends OncePerRequestFilter implements InitializingB
     /**
      * Creates WebInterceptor for default DataDomain.
      */
-    public CayenneFilter(@Nonnull ICayenneRuntimeContext cayenneRuntime) {
+    public CayenneFilter(@Nonnull final ICayenneRuntimeContext cayenneRuntime) {
         this.cayenneRuntime = Assert.notNull(cayenneRuntime, "Cayenne runtime is required");
     }
 
@@ -73,8 +78,8 @@ public class CayenneFilter extends OncePerRequestFilter implements InitializingB
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
+                                    final FilterChain filterChain) throws ServletException, IOException {
 
         if (conditionExcluded != null) {
             PatternsRequestCondition excluded = conditionExcluded.getMatchingCondition(request);
@@ -123,6 +128,7 @@ public class CayenneFilter extends OncePerRequestFilter implements InitializingB
      * 
      * @return
      */
+    @Nonnull
     public String[] getIncludeFilterPatterns() {
         return includeFilterPatterns;
     }
@@ -139,6 +145,7 @@ public class CayenneFilter extends OncePerRequestFilter implements InitializingB
      * 
      * @return
      */
+    @Nonnull
     public String[] getExcludeFilterPatterns() {
         return excludeFilterPatterns;
     }
@@ -147,6 +154,7 @@ public class CayenneFilter extends OncePerRequestFilter implements InitializingB
      * 
      * @param includePatterns
      */
+    @Nonnull
     public void setIncludeFilterPatterns(String... includePatterns) {
         this.includeFilterPatterns = includePatterns;
     }

@@ -17,11 +17,18 @@ package org.cfr.capsicum.datasource;
 
 import java.sql.Connection;
 
+import javax.annotation.Nonnull;
+
 import org.apache.cayenne.ObjectContext;
 import org.springframework.jdbc.datasource.ConnectionHandle;
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.jdbc.datasource.SimpleConnectionHandle;
 
+/**
+ * 
+ * @author devacfr<christophefriederich@mac.com>
+ * @since 1.0
+ */
 public class CayenneConnectionHolder extends ConnectionHolder {
 
     private ObjectContext baseContext;
@@ -34,7 +41,7 @@ public class CayenneConnectionHolder extends ConnectionHolder {
      * in an ongoing transaction
      * @see SimpleConnectionHandle
      */
-    public CayenneConnectionHolder(Connection connection, boolean transactionActive) {
+    public CayenneConnectionHolder(@Nonnull final Connection connection, boolean transactionActive) {
         super(connection, transactionActive);
     }
 
@@ -46,7 +53,7 @@ public class CayenneConnectionHolder extends ConnectionHolder {
      * @see SimpleConnectionHandle
      * @see #ConnectionHolder(java.sql.Connection, boolean)
      */
-    public CayenneConnectionHolder(Connection connection, ObjectContext baseContext) {
+    public CayenneConnectionHolder(final Connection connection, final ObjectContext baseContext) {
         super(connection);
         this.baseContext = baseContext;
     }
@@ -55,11 +62,12 @@ public class CayenneConnectionHolder extends ConnectionHolder {
      * Create a new ConnectionHolder for the given ConnectionHandle.
      * @param connectionHandle the ConnectionHandle to hold
      */
-    public CayenneConnectionHolder(ConnectionHandle connectionHandle, ObjectContext baseContext) {
+    public CayenneConnectionHolder(final ConnectionHandle connectionHandle, final ObjectContext baseContext) {
         super(connectionHandle);
         this.baseContext = baseContext;
     }
 
+    @Nonnull
     public ObjectContext getObjectContext() {
         return baseContext;
     }
@@ -78,11 +86,11 @@ public class CayenneConnectionHolder extends ConnectionHolder {
     }
 
     @Override
-    protected void setConnection(Connection connection) {
+    protected void setConnection(@Nonnull final Connection connection) {
         super.setConnection(connection);
     }
 
-    public void setObjectContext(ObjectContext baseContext) {
+    public void setObjectContext(@Nonnull final ObjectContext baseContext) {
         this.baseContext = baseContext;
     }
 
@@ -90,7 +98,7 @@ public class CayenneConnectionHolder extends ConnectionHolder {
      * {@inheritDoc}
      */
     @Override
-    protected void setTransactionActive(boolean transactionActive) {
+    protected void setTransactionActive(final boolean transactionActive) {
         super.setTransactionActive(transactionActive);
     }
 }

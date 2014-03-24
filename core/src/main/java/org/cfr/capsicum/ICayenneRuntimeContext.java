@@ -23,14 +23,14 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.cfr.capsicum.configuration.DataDomainDefinition;
 import org.cfr.capsicum.datasource.CayenneTransactionManager;
-import org.cfr.capsicum.datasource.IDataSourceOperations;
+import org.cfr.capsicum.datasource.ITransactionOperationSupport;
 
 /**
  * 
  * @author devacfr
  * @since 1.0
  */
-public interface ICayenneRuntimeContext extends DataSourceFactory, IDataSourceOperations {
+public interface ICayenneRuntimeContext extends DataSourceFactory, ITransactionOperationSupport {
 
     /**
      * 

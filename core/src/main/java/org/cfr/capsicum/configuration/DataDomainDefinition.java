@@ -33,7 +33,7 @@ import org.springframework.transaction.support.ResourceTransactionManager;
  * in the cayenne configuration xml file 
  * and this class,
  * the name of domain is mandatory.</p> 
- * @author devacfr
+ * @author devacfr<christophefriederich@mac.com>
  * @since 1.0
  * @see org.apache.cayenne.configuration.DataNodeDescriptor
  * @see org.apache.cayenne.access.DataDomain
@@ -124,8 +124,7 @@ public class DataDomainDefinition {
      * @see DataDomainDefinition#getTransactionManager() 
      */
     public DataSource getDataSource() {
-        if (dataSource == null
-                && transactionManager != null) {
+        if (dataSource == null && transactionManager != null) {
             return (DataSource) transactionManager.getResourceFactory();
         }
         return dataSource;

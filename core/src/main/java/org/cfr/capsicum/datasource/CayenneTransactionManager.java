@@ -25,8 +25,6 @@ import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.di.Injector;
 import org.cfr.capsicum.support.ExceptionTranslator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.datasource.ConnectionHolder;
@@ -40,6 +38,11 @@ import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.ResourceTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+/**
+ * 
+ * @author devacfr<christophefriederich@mac.com>
+ * @since 1.0
+ */
 public class CayenneTransactionManager extends AbstractPlatformTransactionManager implements
         ResourceTransactionManager, InitializingBean {
 
@@ -71,7 +74,7 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
      * @param dataSource
      *            JDBC DataSource to manage transactions for
      */
-    public CayenneTransactionManager(@Nonnull DataSource dataSource, @Nonnull CayenneRuntime cayenneRuntime) {
+    public CayenneTransactionManager(@Nonnull final DataSource dataSource, @Nonnull final CayenneRuntime cayenneRuntime) {
         this();
         setDataSource(dataSource);
         setCayenneRuntime(cayenneRuntime);
@@ -101,7 +104,7 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
      * @see TransactionAwareDataSourceProxy
      * @see org.springframework.transaction.jta.JtaTransactionManager
      */
-    public void setDataSource(DataSource dataSource) {
+    public void setDataSource(final DataSource dataSource) {
         if (dataSource instanceof TransactionAwareDataSourceProxy) {
             // If we got a TransactionAwareDataSourceProxy, we need to perform
             // transactions
@@ -118,11 +121,12 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
     /**
      * Return the JDBC DataSource that this instance manages transactions for.
      */
+    @Nonnull
     public DataSource getDataSource() {
         return this.dataSource;
     }
 
-    public void setCayenneRuntime(CayenneRuntime cayenneRuntime) {
+    public void setCayenneRuntime(@Nonnull final CayenneRuntime cayenneRuntime) {
         this.cayenneRuntime = cayenneRuntime;
     }
 
@@ -148,6 +152,7 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
      * {@inheritDoc}
      */
     @Override
+    @Nonnull
     protected Object doGetTransaction() {
         CayenneTransactionObject txObject = new CayenneTransactionObject();
         txObject.setSavepointAllowed(isNestedTransactionAllowed());
@@ -160,17 +165,16 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
      * {@inheritDoc}
      */
     @Override
-    protected boolean isExistingTransaction(Object transaction) {
+    protected boolean isExistingTransaction(@Nonnull final Object transaction) {
         CayenneTransactionObject txObject = (CayenneTransactionObject) transaction;
-        return txObject.getConnectionHolder() != null
-                && txObject.getConnectionHolderEx().isTransactionActive();
+        return txObject.getConnectionHolder() != null && txObject.getConnectionHolderEx().isTransactionActive();
     }
 
     /**
      * This implementation sets the isolation level but ignores the timeout.
      */
     @Override
-    protected void doBegin(Object transaction, TransactionDefinition definition) {
+    protected void doBegin(@Nonnull final Object transaction, @Nonnull final TransactionDefinition definition) {
         CayenneTransactionObject txObject = (CayenneTransactionObject) transaction;
         Connection con = null;
 
@@ -179,19 +183,23 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
                     || txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
                 Connection newCon = this.dataSource.getConnection();
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Acquired Connection ["
-                            + newCon + "] for JDBC transaction");
+                    logger.debug("Acquired Connection [" + newCon + "] for JDBC transaction");
                 }
                 ObjectContext context = null;
                 if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRES_NEW) {
-                    Injector injector = this.cayenneRuntime.getInjector();
-                    context = injector.getInstance(ObjectContextFactory.class).createContext();
+                    // create child context
+                    ObjectContext parent = BaseContext.getThreadObjectContext();
+                    context = this.cayenneRuntime.newContext((parent != null ? parent.getChannel()
+                            : cayenneRuntime.getChannel()));
                 } else {
                     context = BaseContext.getThreadObjectContext();
                 }
                 txObject.setConnectionHolder(new CayenneConnectionHolder(newCon, context), true);
-                BaseContext.bindThreadObjectContext(context);
+
             }
+
+            // set the current context
+            BaseContext.bindThreadObjectContext(txObject.getConnectionHolderEx().getObjectContext());
 
             txObject.getConnectionHolder().setSynchronizedWithTransaction(true);
             con = txObject.getConnectionHolder().getConnection();
@@ -208,8 +216,7 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
             if (con.getAutoCommit()) {
                 txObject.setMustRestoreAutoCommit(true);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Switching JDBC Connection ["
-                            + con + "] to manual commit");
+                    logger.debug("Switching JDBC Connection [" + con + "] to manual commit");
                 }
                 con.setAutoCommit(false);
             }
@@ -234,7 +241,8 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
     }
 
     @Override
-    protected Object doSuspend(Object transaction) {
+    @Nonnull
+    protected Object doSuspend(@Nonnull final Object transaction) {
         CayenneTransactionObject txObject = (CayenneTransactionObject) transaction;
         txObject.setConnectionHolder(null);
         ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.unbindResource(this.dataSource);
@@ -242,19 +250,18 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
     }
 
     @Override
-    protected void doResume(Object transaction, Object suspendedResources) {
+    protected void doResume(final Object transaction, final Object suspendedResources) {
         CayenneConnectionHolder conHolder = (CayenneConnectionHolder) suspendedResources;
         TransactionSynchronizationManager.bindResource(this.dataSource, conHolder);
         BaseContext.bindThreadObjectContext(conHolder.getObjectContext());
     }
 
     @Override
-    protected void doCommit(DefaultTransactionStatus status) {
+    protected void doCommit(@Nonnull final DefaultTransactionStatus status) {
         CayenneTransactionObject txObject = (CayenneTransactionObject) status.getTransaction();
         Connection con = txObject.getConnectionHolder().getConnection();
         if (status.isDebug()) {
-            logger.debug("Committing JDBC transaction on Connection ["
-                    + con + "]");
+            logger.debug("Committing JDBC transaction on Connection [" + con + "]");
         }
         try {
             status.flush();
@@ -269,13 +276,12 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
     }
 
     @Override
-    protected void doRollback(DefaultTransactionStatus status) {
+    protected void doRollback(@Nonnull final DefaultTransactionStatus status) {
         CayenneTransactionObject txObject = (CayenneTransactionObject) status.getTransaction();
         Connection con = txObject.getConnectionHolder().getConnection();
         ObjectContext dataContext = txObject.getConnectionHolderEx().getObjectContext();
         if (status.isDebug()) {
-            logger.debug("Rolling back JDBC transaction on Connection ["
-                    + con + "]");
+            logger.debug("Rolling back JDBC transaction on Connection [" + con + "]");
         }
         try {
             if (dataContext != null) {
@@ -292,17 +298,17 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
     }
 
     @Override
-    protected void doSetRollbackOnly(DefaultTransactionStatus status) {
+    protected void doSetRollbackOnly(@Nonnull final DefaultTransactionStatus status) {
         CayenneTransactionObject txObject = (CayenneTransactionObject) status.getTransaction();
         if (status.isDebug()) {
-            logger.debug("Setting JDBC transaction ["
-                    + txObject.getConnectionHolder().getConnection() + "] rollback-only");
+            logger.debug("Setting JDBC transaction [" + txObject.getConnectionHolder().getConnection()
+                    + "] rollback-only");
         }
         txObject.setRollbackOnly();
     }
 
     @Override
-    protected void doCleanupAfterCompletion(Object transaction) {
+    protected void doCleanupAfterCompletion(@Nonnull final Object transaction) {
         CayenneTransactionObject txObject = (CayenneTransactionObject) transaction;
 
         // Remove the connection holder from the thread, if exposed.
@@ -323,8 +329,7 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
 
         if (txObject.isNewConnectionHolder()) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Releasing JDBC Connection ["
-                        + con + "] after transaction");
+                logger.debug("Releasing JDBC Connection [" + con + "] after transaction");
             }
             DataSourceUtils.releaseConnection(con, this.dataSource);
         }
@@ -342,7 +347,8 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
 
         private boolean mustRestoreAutoCommit;
 
-        public void setConnectionHolder(ConnectionHolder connectionHolder, boolean newConnectionHolder) {
+        public void setConnectionHolder(@Nonnull final ConnectionHolder connectionHolder,
+                                        final boolean newConnectionHolder) {
             super.setConnectionHolder(connectionHolder);
             this.newConnectionHolder = newConnectionHolder;
         }
@@ -353,10 +359,10 @@ public class CayenneTransactionManager extends AbstractPlatformTransactionManage
 
         @Deprecated
         public boolean hasTransaction() {
-            return getConnectionHolder() != null
-                    && getConnectionHolderEx().isTransactionActive();
+            return getConnectionHolder() != null && getConnectionHolderEx().isTransactionActive();
         }
 
+        @Nonnull
         public CayenneConnectionHolder getConnectionHolderEx() {
             return (CayenneConnectionHolder) getConnectionHolder();
         }

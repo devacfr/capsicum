@@ -28,7 +28,7 @@ import org.apache.cayenne.resource.Resource;
 import org.cfr.commons.util.Assert;
 
 /**
- * Decorator class allowing to manipulate cayenne resource with spring
+ * Decorator class allowing to manipulate cayenne resource with spring.
  * @author devacfr
  * @since 1.0
  */
@@ -41,14 +41,17 @@ public class SpringResource implements Resource, org.springframework.core.io.Res
 
     private final org.springframework.core.io.Resource instance;
 
+    /**
+     * 
+     * @param resource
+     */
     public SpringResource(@Nonnull org.springframework.core.io.Resource resource) {
         this.instance = Assert.notNull(resource);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj == this
-                || obj instanceof SpringResource && this.instance.equals(((SpringResource) obj).instance);
+        return obj == this || obj instanceof SpringResource && this.instance.equals(((SpringResource) obj).instance);
     }
 
     @Override
@@ -61,7 +64,7 @@ public class SpringResource implements Resource, org.springframework.core.io.Res
     }
 
     @Override
-    public Resource getRelativeResource(String relativePath) {
+    public Resource getRelativeResource(final String relativePath) {
         org.springframework.core.io.Resource resource;
         try {
             resource = this.instance.createRelative(relativePath);
@@ -118,7 +121,7 @@ public class SpringResource implements Resource, org.springframework.core.io.Res
     }
 
     @Override
-    public org.springframework.core.io.Resource createRelative(String relativePath) throws IOException {
+    public org.springframework.core.io.Resource createRelative(final String relativePath) throws IOException {
         return instance.createRelative(relativePath);
     }
 

@@ -41,7 +41,7 @@ public class SpringResourceLocator implements ResourceLocator {
      * @param resourceLoader
      */
     @Autowired
-    public SpringResourceLocator(@Nonnull ResourceLoader resourceLoader) {
+    public SpringResourceLocator(@Nonnull final ResourceLoader resourceLoader) {
         this.resourceLoader = Assert.notNull(resourceLoader);
     }
 
@@ -49,7 +49,7 @@ public class SpringResourceLocator implements ResourceLocator {
      * {@inheritDoc}
      */
     @Override
-    public Collection<Resource> findResources(String name) {
+    public Collection<Resource> findResources(final String name) {
         org.springframework.core.io.Resource rsrc = resourceLoader.getResource(name);
         return ImmutableList.<Resource> of(new SpringResource(rsrc));
     }

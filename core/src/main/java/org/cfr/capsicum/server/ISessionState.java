@@ -15,6 +15,11 @@
  */
 package org.cfr.capsicum.server;
 
+/**
+ * 
+ * @author devacfr<christophefriederich@mac.com>
+ * @since 1.0
+ */
 public interface ISessionState {
 
     boolean isForceNewSession();

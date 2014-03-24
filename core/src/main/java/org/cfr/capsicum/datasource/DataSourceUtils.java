@@ -19,6 +19,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.BaseContext;
@@ -79,7 +81,9 @@ public abstract class DataSourceUtils {
      * if the attempt to get a Connection failed
      * @see #releaseConnection
      */
-    public static Connection getConnection(DataSource dataSource) throws CannotGetJdbcConnectionException {
+    @Nonnull
+    public static Connection getConnection(@Nonnull final DataSource dataSource)
+            throws CannotGetJdbcConnectionException {
         try {
             return doGetConnection(dataSource);
         } catch (SQLException ex) {
@@ -99,12 +103,12 @@ public abstract class DataSourceUtils {
      * @throws SQLException if thrown by JDBC methods
      * @see #doReleaseConnection
      */
-    public static Connection doGetConnection(DataSource dataSource) throws SQLException {
+    @Nonnull
+    public static Connection doGetConnection(@Nonnull final DataSource dataSource) throws SQLException {
         Assert.notNull(dataSource, "No DataSource specified");
 
         CayenneConnectionHolder conHolder = (CayenneConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
-        if (conHolder != null
-                && (conHolder.hasConnection() || conHolder.isSynchronizedWithTransaction())) {
+        if (conHolder != null && (conHolder.hasConnection() || conHolder.isSynchronizedWithTransaction())) {
             conHolder.requested();
             if (!conHolder.hasConnection()) {
                 logger.debug("Fetching resumed JDBC Connection from DataSource");
@@ -148,18 +152,18 @@ public abstract class DataSourceUtils {
      * @throws SQLException if thrown by JDBC methods
      * @see #resetConnectionAfterTransaction
      */
-    public static Integer prepareConnectionForTransaction(Connection con, TransactionDefinition definition)
+    @Nullable
+    public static Integer prepareConnectionForTransaction(@Nonnull final Connection con,
+                                                          @Nullable final TransactionDefinition definition)
             throws SQLException {
 
         Assert.notNull(con, "No Connection specified");
 
         // Set read-only flag.
-        if (definition != null
-                && definition.isReadOnly()) {
+        if (definition != null && definition.isReadOnly()) {
             try {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Setting JDBC Connection ["
-                            + con + "] read-only");
+                    logger.debug("Setting JDBC Connection [" + con + "] read-only");
                 }
                 con.setReadOnly(true);
             } catch (Throwable ex) {
@@ -171,11 +175,10 @@ public abstract class DataSourceUtils {
 
         // Apply specific isolation level, if any.
         Integer previousIsolationLevel = null;
-        if (definition != null
-                && definition.getIsolationLevel() != TransactionDefinition.ISOLATION_DEFAULT) {
+        if (definition != null && definition.getIsolationLevel() != TransactionDefinition.ISOLATION_DEFAULT) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Changing isolation level of JDBC Connection ["
-                        + con + "] to " + definition.getIsolationLevel());
+                logger.debug("Changing isolation level of JDBC Connection [" + con + "] to "
+                        + definition.getIsolationLevel());
             }
             previousIsolationLevel = new Integer(con.getTransactionIsolation());
             con.setTransactionIsolation(definition.getIsolationLevel());
@@ -191,14 +194,15 @@ public abstract class DataSourceUtils {
      * @param previousIsolationLevel the isolation level to restore, if any
      * @see #prepareConnectionForTransaction
      */
-    public static void resetConnectionAfterTransaction(Connection con, Integer previousIsolationLevel) {
+    public static void resetConnectionAfterTransaction(@Nonnull final Connection con,
+                                                       @Nullable final Integer previousIsolationLevel) {
         Assert.notNull(con, "No Connection specified");
         try {
             // Reset transaction isolation to previous value, if changed for the transaction.
             if (previousIsolationLevel != null) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Resetting isolation level of JDBC Connection ["
-                            + con + "] to " + previousIsolationLevel);
+                    logger.debug("Resetting isolation level of JDBC Connection [" + con + "] to "
+                            + previousIsolationLevel);
                 }
                 con.setTransactionIsolation(previousIsolationLevel.intValue());
             }
@@ -206,8 +210,7 @@ public abstract class DataSourceUtils {
             // Reset read-only flag.
             if (con.isReadOnly()) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Resetting read-only flag of JDBC Connection ["
-                            + con + "]");
+                    logger.debug("Resetting read-only flag of JDBC Connection [" + con + "]");
                 }
                 con.setReadOnly(false);
             }
@@ -224,13 +227,12 @@ public abstract class DataSourceUtils {
      * (may be <code>null</code>)
      * @return whether the Connection is transactional
      */
-    public static boolean isConnectionTransactional(Connection con, DataSource dataSource) {
+    public static boolean isConnectionTransactional(final Connection con, final DataSource dataSource) {
         if (dataSource == null) {
             return false;
         }
         CayenneConnectionHolder conHolder = (CayenneConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
-        return conHolder != null
-                && connectionEquals(conHolder, con);
+        return conHolder != null && connectionEquals(conHolder, con);
     }
 
     /**
@@ -241,7 +243,8 @@ public abstract class DataSourceUtils {
      * @throws SQLException if thrown by JDBC methods
      * @see java.sql.Statement#setQueryTimeout
      */
-    public static void applyTransactionTimeout(Statement stmt, DataSource dataSource) throws SQLException {
+    public static void applyTransactionTimeout(@Nonnull final Statement stmt, @Nonnull final DataSource dataSource)
+            throws SQLException {
         applyTimeout(stmt, dataSource, 0);
     }
 
@@ -254,12 +257,12 @@ public abstract class DataSourceUtils {
      * @throws SQLException if thrown by JDBC methods
      * @see java.sql.Statement#setQueryTimeout
      */
-    public static void applyTimeout(Statement stmt, DataSource dataSource, int timeout) throws SQLException {
+    public static void applyTimeout(@Nonnull final Statement stmt, @Nonnull final DataSource dataSource,
+                                    final int timeout) throws SQLException {
         Assert.notNull(stmt, "No Statement specified");
         Assert.notNull(dataSource, "No DataSource specified");
         ConnectionHolder holder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
-        if (holder != null
-                && holder.hasTimeout()) {
+        if (holder != null && holder.hasTimeout()) {
             // Remaining transaction timeout overrides specified value.
             stmt.setQueryTimeout(holder.getTimeToLiveInSeconds());
         } else if (timeout > 0) {
@@ -277,7 +280,7 @@ public abstract class DataSourceUtils {
      * (may be <code>null</code>)
      * @see #getConnection
      */
-    public static void releaseConnection(Connection con, DataSource dataSource) {
+    public static void releaseConnection(@Nonnull final Connection con, @Nonnull final DataSource dataSource) {
         try {
             doReleaseConnection(con, dataSource);
         } catch (SQLException ex) {
@@ -298,15 +301,15 @@ public abstract class DataSourceUtils {
      * @throws SQLException if thrown by JDBC methods
      * @see #doGetConnection
      */
-    public static void doReleaseConnection(Connection con, DataSource dataSource) throws SQLException {
+    public static void doReleaseConnection(@Nullable final Connection con, @Nullable final DataSource dataSource)
+            throws SQLException {
         if (con == null) {
             return;
         }
 
         if (dataSource != null) {
             CayenneConnectionHolder conHolder = (CayenneConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
-            if (conHolder != null
-                    && connectionEquals(conHolder, con)) {
+            if (conHolder != null && connectionEquals(conHolder, con)) {
                 // It's the transactional Connection: Don't close it.
                 conHolder.released();
                 return;
@@ -315,8 +318,7 @@ public abstract class DataSourceUtils {
 
         // Leave the Connection open only if the DataSource is our
         // special SmartDataSoruce and it wants the Connection left open.
-        if (!(dataSource instanceof SmartDataSource)
-                || ((SmartDataSource) dataSource).shouldClose(con)) {
+        if (!(dataSource instanceof SmartDataSource) || ((SmartDataSource) dataSource).shouldClose(con)) {
             logger.debug("Returning JDBC Connection to DataSource");
             con.close();
         }
@@ -332,15 +334,16 @@ public abstract class DataSourceUtils {
      * @return whether the given Connections are equal
      * @see #getTargetConnection
      */
-    private static boolean connectionEquals(CayenneConnectionHolder conHolder, Connection passedInCon) {
+    private static boolean connectionEquals(@Nonnull final CayenneConnectionHolder conHolder,
+                                            @Nonnull final Connection passedInCon) {
         if (!conHolder.hasConnection()) {
             return false;
         }
         Connection heldCon = conHolder.getConnection();
         // Explicitly check for identity too: for Connection handles that do not implement
         // "equals" properly, such as the ones Commons DBCP exposes).
-        return heldCon == passedInCon
-                || heldCon.equals(passedInCon) || getTargetConnection(heldCon).equals(passedInCon);
+        return heldCon == passedInCon || heldCon.equals(passedInCon)
+                || getTargetConnection(heldCon).equals(passedInCon);
     }
 
     /**
@@ -351,7 +354,8 @@ public abstract class DataSourceUtils {
      * @return the innermost target Connection, or the passed-in one if no proxy
      * @see ConnectionProxy#getTargetConnection()
      */
-    public static Connection getTargetConnection(Connection con) {
+    @Nullable
+    public static Connection getTargetConnection(@Nullable final Connection con) {
         Connection conToUse = con;
         while (conToUse instanceof ConnectionProxy) {
             conToUse = ((ConnectionProxy) conToUse).getTargetConnection();
@@ -367,7 +371,7 @@ public abstract class DataSourceUtils {
      * @return the connection synchronization order to use
      * @see #CONNECTION_SYNCHRONIZATION_ORDER
      */
-    private static int getConnectionSynchronizationOrder(DataSource dataSource) {
+    private static int getConnectionSynchronizationOrder(@Nullable final DataSource dataSource) {
         int order = CONNECTION_SYNCHRONIZATION_ORDER;
         DataSource currDs = dataSource;
         while (currDs instanceof DelegatingDataSource) {
@@ -392,7 +396,8 @@ public abstract class DataSourceUtils {
 
         private boolean holderActive = true;
 
-        public ConnectionSynchronization(CayenneConnectionHolder connectionHolder, DataSource dataSource) {
+        public ConnectionSynchronization(@Nonnull final CayenneConnectionHolder connectionHolder,
+                @Nonnull final DataSource dataSource) {
             this.connectionHolder = connectionHolder;
             this.dataSource = dataSource;
             this.order = getConnectionSynchronizationOrder(dataSource);
@@ -407,8 +412,7 @@ public abstract class DataSourceUtils {
         public void suspend() {
             if (this.holderActive) {
                 TransactionSynchronizationManager.unbindResource(this.dataSource);
-                if (this.connectionHolder.hasConnection()
-                        && !this.connectionHolder.isOpen()) {
+                if (this.connectionHolder.hasConnection() && !this.connectionHolder.isOpen()) {
                     // Release Connection on suspend if the application doesn't keep
                     // a handle to it anymore. We will fetch a fresh Connection if the
                     // application accesses the ConnectionHolder again after resume,
@@ -443,7 +447,7 @@ public abstract class DataSourceUtils {
         }
 
         @Override
-        public void afterCompletion(int status) {
+        public void afterCompletion(final int status) {
             // If we haven't closed the Connection in beforeCompletion,
             // close it now. The holder might have been used for other
             // cleanup in the meantime, for example by a Hibernate Session.

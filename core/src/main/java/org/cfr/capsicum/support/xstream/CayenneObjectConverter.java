@@ -25,6 +25,11 @@ import com.thoughtworks.xstream.converters.javabean.BeanProvider;
 import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
 import com.thoughtworks.xstream.mapper.Mapper;
 
+/**
+ * 
+ * @author devacfr<christophefriederich@mac.com>
+ * @since 1.0
+ */
 public class CayenneObjectConverter extends JavaBeanConverter {
 
     static class BeanProviderOverride extends BeanProvider {

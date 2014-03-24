@@ -26,24 +26,31 @@ import org.cfr.commons.util.Assert;
 import org.springframework.beans.factory.DisposableBean;
 
 /**
- * 
- * @author devacfr
+ * This class allows creating {@link ObjectContext} for the the current thread.
+ * @author devacfr<christophefriederich@mac.com>
  * @since 1.0
- *
+ * @see MethodInterceptor
  */
 public class CayenneInterceptor implements MethodInterceptor, DisposableBean {
 
+    /**
+     * cayenne runtime instance.
+     */
     protected final CayenneRuntime cayenneRuntime;
 
     /**
      * Creates CayenneInterceptor for CayenneRuntime.
+     * @param cayenneRuntime cayenne runtime instance
      */
     public CayenneInterceptor(final CayenneRuntime cayenneRuntime) {
         this.cayenneRuntime = Assert.notNull(cayenneRuntime, "Cayenne Runtime is required");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
+    public Object invoke(final MethodInvocation invocation) throws Throwable {
         ObjectContext objectContext = BaseContext.getThreadObjectContext();
         if (objectContext == null) {
             Injector injector = cayenneRuntime.getInjector();

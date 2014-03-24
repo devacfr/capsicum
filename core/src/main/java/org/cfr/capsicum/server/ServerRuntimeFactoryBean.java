@@ -51,7 +51,7 @@ import org.cfr.capsicum.configuration.DataDomainDefinition;
 import org.cfr.capsicum.configuration.DataDomainProvider;
 import org.cfr.capsicum.configuration.DecoratorDataChannelDescriptorLoader;
 import org.cfr.capsicum.datasource.CayenneTransactionManager;
-import org.cfr.capsicum.datasource.IDataSourceOperations;
+import org.cfr.capsicum.datasource.ITransactionOperationSupport;
 import org.cfr.capsicum.datasource.SpringDataSourceFactory;
 import org.cfr.capsicum.resource.SpringResourceLocator;
 import org.cfr.commons.util.Assert;
@@ -80,7 +80,7 @@ import com.google.common.collect.Lists;
  * @since 1.0
  */
 public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, ApplicationContextAware,
-        InitializingBean, DisposableBean, ICayenneRuntimeContext, TransactionManager, IDataSourceOperations {
+        InitializingBean, DisposableBean, ICayenneRuntimeContext, TransactionManager, ITransactionOperationSupport {
 
     protected ServerRuntime cayenneRuntime;
 
@@ -129,8 +129,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
     @Override
     public void afterPropertiesSet() throws Exception {
         // check datasource and transaction
-        if (transactionManager == null
-                && dataSource == null) {
+        if (transactionManager == null && dataSource == null) {
             throw new IllegalArgumentException("Property 'transactionManager' or 'dataSource' is required");
         }
 
@@ -142,8 +141,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
         }
         SpringServerModule springModule = new SpringServerModule();
         List<String> configurationLocations = ImmutableList.of();
-        if (dataDomainDefinitions != null
-                && !dataDomainDefinitions.isEmpty()) {
+        if (dataDomainDefinitions != null && !dataDomainDefinitions.isEmpty()) {
             configurationLocations = Lists.newArrayListWithCapacity(dataDomainDefinitions.size());
             for (DataDomainDefinition dataDomainDefinition : dataDomainDefinitions) {
                 Assert.notNull(dataDomainDefinition.getName(), "the name of DataDomain is required");
@@ -180,6 +178,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
 
     /**
      * Shuts down underlying Configuration.
+     * @exception Exception if cayenne shutdown failed
      */
     @Override
     public void destroy() throws Exception {
@@ -208,7 +207,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
      * {@inheritDoc}
      */
     @Override
-    public void setApplicationContext(@Nonnull ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@Nonnull final ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
@@ -234,7 +233,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
      * {@inheritDoc}
      */
     @Override
-    public <T> T getInstance(Class<T> classType) {
+    public <T> T getInstance(final Class<T> classType) {
         return this.cayenneRuntime.getInjector().getInstance(classType);
     }
 
@@ -263,7 +262,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
      * {@inheritDoc}
      */
     @Override
-    public DataSource getDataSource(@Nullable DataNodeDescriptor nodeDescriptor) throws Exception {
+    public DataSource getDataSource(@Nullable final DataNodeDescriptor nodeDescriptor) throws Exception {
         DataSource dataSource = dataSourceFactory.getDataSource(nodeDescriptor);
         // if datasource is null, use default dataSource
         if (dataSource == null) {
@@ -315,15 +314,16 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
         return transactionTemplate.execute(new TransactionCallback<T>() {
 
             @Override
-            public T doInTransaction(TransactionStatus status) {
+            public T doInTransaction(final TransactionStatus status) {
                 return op.perform();
             }
         });
     }
 
     @Override
-    public <T> T execute(final @Nonnull TransactionDefinition transactionDefinition, final TransactionCallback<T> action)
-            throws TransactionException {
+    public <T> T
+            execute(@Nonnull final TransactionDefinition transactionDefinition, final TransactionCallback<T> action)
+                    throws TransactionException {
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager,
                 Assert.notNull(transactionDefinition, "transactionDefinition is required"));
         return transactionTemplate.execute(action);
@@ -346,6 +346,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
         return transactionManager;
     }
 
+    @Nonnull
     public JdbcEventLogger getJdbcEventLogger() {
         return getInstance(JdbcEventLogger.class);
     }
@@ -355,6 +356,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
      * @return
      */
     @Override
+    @Nonnull
     public List<DataDomainDefinition> getDataDomainDefinitions() {
         return dataDomainDefinitions;
     }
@@ -398,7 +400,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
     private class SpringServerModule implements Module {
 
         @Override
-        public void configure(@Nonnull Binder binder) {
+        public void configure(@Nonnull final Binder binder) {
             // replace Default DataDomain Provider
             binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
 
@@ -414,7 +416,7 @@ public class ServerRuntimeFactoryBean implements FactoryBean<CayenneRuntime>, Ap
             ResourceLocator resourceLocator = new SpringResourceLocator(getResourceLoader());
             binder.bind(ResourceLocator.class).toInstance(resourceLocator);
             binder.bind(TransactionManager.class).toInstance(ServerRuntimeFactoryBean.this);
-            binder.bind(IDataSourceOperations.class).toInstance(ServerRuntimeFactoryBean.this);
+            binder.bind(ITransactionOperationSupport.class).toInstance(ServerRuntimeFactoryBean.this);
 
             if (isUseSessionPersistentState()) {
                 binder.bind(RequestHandler.class).to(SessionContextRequestHandler.class).withoutScope();

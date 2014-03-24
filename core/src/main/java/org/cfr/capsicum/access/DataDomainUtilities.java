@@ -62,16 +62,16 @@ public abstract class DataDomainUtilities {
     /**
      * Finds the datadomain definition is the specified domain name paramter. 
      * @param domainName the domain name to find
-     * @param cayenneRuntimeContext cayenne runtime context
+     * @param runtime cayenne runtime context
      * @return Returns the datadomain definition is the specified domain name paramter, 
      * otherwise <code>null</code> 
      */
-    public static DataDomainDefinition findDataDomainDefinition(@Nonnull final ICayenneRuntimeContext cayenneRuntimeContext,
+    public static DataDomainDefinition findDataDomainDefinition(@Nonnull final ICayenneRuntimeContext runtime,
                                                                 @Nullable final String domainName) {
         if (StringUtils.isEmpty(domainName)) {
             return null;
         }
-        for (DataDomainDefinition dataDomainDefinition : cayenneRuntimeContext.getDataDomainDefinitions()) {
+        for (DataDomainDefinition dataDomainDefinition : runtime.getDataDomainDefinitions()) {
             String name = dataDomainDefinition.getName();
             if (domainName.equals(name)) {
                 return dataDomainDefinition;
@@ -83,16 +83,16 @@ public abstract class DataDomainUtilities {
     /**
      * Finds the datadomain definition associated to dataNodeDescriptor paramter. 
      * @param dataNodeDescriptor the datanodedescriptor
-     * @param cayenneRuntimeContext cayenne runtime context
+     * @param runtime cayenne runtime context
      * @return Returns the datadomain definition associated to dataNodeDescriptor paramter,
      * otherwise <code>false</code>.
      */
-    public static DataDomainDefinition findDataDomainDefinition(@Nonnull final ICayenneRuntimeContext cayenneRuntimeContext,
+    public static DataDomainDefinition findDataDomainDefinition(@Nonnull final ICayenneRuntimeContext runtime,
                                                                 @Nonnull final DataNodeDescriptor dataNodeDescriptor) {
-        Assert.notNull(cayenneRuntimeContext, "cayenneRuntimeContext is required");
+        Assert.notNull(runtime, "cayenneRuntimeContext is required");
         Assert.notNull(dataNodeDescriptor, "dataNodeDescriptor is required");
         Assert.notNull(dataNodeDescriptor.getDataChannelDescriptor(),
             "dataNodeDescriptor.getDataChannelDescriptor() is required");
-        return findDataDomainDefinition(cayenneRuntimeContext, dataNodeDescriptor.getDataChannelDescriptor().getName());
+        return findDataDomainDefinition(runtime, dataNodeDescriptor.getDataChannelDescriptor().getName());
     }
 }

@@ -15,6 +15,9 @@
  */
 package org.cfr.capsicum.support.impl;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.ObjectContext;
@@ -22,6 +25,11 @@ import org.apache.cayenne.PersistenceState;
 import org.cfr.capsicum.support.IEntrepriseObject;
 import org.cfr.commons.util.Assert;
 
+/**
+ * 
+ * @author devacfr<christophefriederich@mac.com>
+ * @since
+ */
 @SuppressWarnings("serial")
 public abstract class EntrepriseObject extends CayenneDataObject implements IEntrepriseObject {
 
@@ -35,14 +43,22 @@ public abstract class EntrepriseObject extends CayenneDataObject implements IEnt
         context.deleteObjects(this);
     }
 
+    /**
+     * Gets the internal identifier.
+     * @param columnName the column name of primary key.
+     * @param <U> the type of identifier
+     * @return Returns the internal id.
+     */
     @SuppressWarnings("unchecked")
-    protected <U> U geInternalId(String columnName) {
-        return getObjectId() != null
-                && !getObjectId().isTemporary() ? (U) getObjectId().getIdSnapshot().get(columnName) : null;
+    @Nullable
+    protected <U> U geInternalId(@Nonnull final String columnName) {
+        return getObjectId() != null && !getObjectId().isTemporary() ? (U) getObjectId().getIdSnapshot()
+                .get(columnName) : null;
     }
 
     /**
      * Convenience method to get an id that may be used by the view. There is no setter as id is managed by Cayenne.
+     * @return Returns the identifier primary key managed by cayenne.
      */
     protected long getPkId() {
         return isNew() ? -1 : Cayenne.longPKForObject(this);
@@ -53,7 +69,6 @@ public abstract class EntrepriseObject extends CayenneDataObject implements IEnt
      */
     @Override
     public boolean isNew() {
-        return getPersistenceState() == PersistenceState.TRANSIENT
-                || getPersistenceState() == PersistenceState.NEW;
+        return getPersistenceState() == PersistenceState.TRANSIENT || getPersistenceState() == PersistenceState.NEW;
     }
 }

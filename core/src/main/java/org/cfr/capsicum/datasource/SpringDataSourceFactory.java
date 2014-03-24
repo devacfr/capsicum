@@ -36,7 +36,7 @@ public class SpringDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
+    public DataSource getDataSource(final DataNodeDescriptor nodeDescriptor) throws Exception {
         DataDomainDefinition dataDomain = DataDomainUtilities.findDataDomainDefinition(cayenneRuntimeContext,
             nodeDescriptor);
         if (dataDomain == null) {

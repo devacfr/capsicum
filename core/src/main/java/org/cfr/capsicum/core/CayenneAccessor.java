@@ -33,7 +33,7 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
  * A superclass for templates or interceptors using Cayenne. Provides Spring
  * exception translation facility.
  * @since 1.0
- * @author devacfr
+ * @author devacfr<christophefriederich@mac.com>
  */
 public abstract class CayenneAccessor implements InitializingBean {
 
@@ -61,6 +61,7 @@ public abstract class CayenneAccessor implements InitializingBean {
      * @return Returns the associated cayenne runtime context.
      * @see ICayenneRuntimeContext
      */
+    @Nonnull
     protected ICayenneRuntimeContext getCayenneRuntime() {
         return cayenneRuntimeFactory;
     }
@@ -69,6 +70,7 @@ public abstract class CayenneAccessor implements InitializingBean {
      * 
      * @return Returns the {@link CayenneTransactionManager} associated to cayenne context runtime.
      */
+    @Nonnull
     protected CayenneTransactionManager getTransactionManager() {
         return cayenneRuntimeFactory.getTransactionManager();
     }
@@ -76,6 +78,7 @@ public abstract class CayenneAccessor implements InitializingBean {
     /**
      * @return  Returns DataContext.
      */
+    @Nonnull
     public ObjectContext getObjectContext() {
         ObjectContext objectContext = null;
         //TODO [devacfr] do difference between server and client

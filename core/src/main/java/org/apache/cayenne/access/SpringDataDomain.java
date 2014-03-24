@@ -17,28 +17,48 @@ package org.apache.cayenne.access;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.commons.collections.Transformer;
-import org.cfr.capsicum.datasource.IDataSourceOperations;
+import org.cfr.capsicum.datasource.ITransactionOperationSupport;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+/**
+ * This class extends {@link DataDomain} allowing the support of spring transaction.
+ * @author devacfr<christophefriederich@mac.com>
+ * @since 1.0
+ */
 public class SpringDataDomain extends DataDomain {
 
+    /**
+     * Allows the operation execution in transaction.
+     */
     @Inject
-    private IDataSourceOperations transationOperation;
+    private ITransactionOperationSupport transationOperation;
 
-    public SpringDataDomain(String name) {
+    /**
+     * create new naming DataDomain instance.
+     * @param name the name of DataDomain
+     */
+    public SpringDataDomain(@Nonnull final String name) {
         super(name);
     }
 
-    public SpringDataDomain(String name, Map<String, String> properties) {
+    /**
+     * create new naming DataDomain instance with properties.
+     * @param name the name of DataDomain
+     * @param properties properties
+     */
+    public SpringDataDomain(@Nonnull final String name, @Nullable final Map<String, String> properties) {
         super(name, properties);
     }
 
@@ -52,20 +72,24 @@ public class SpringDataDomain extends DataDomain {
      * policy is to check for the thread transaction, and use it if one exists.
      * If it doesn't, a new transaction is created, with a scope limited to this
      * method.
+     * @param operation a operation execute in current transaction
+     * @return Returns a object.
      */
     @Override
-    Object runInTransaction(final Transformer operation) {
+    Object runInTransaction(@Nonnull final Transformer operation) {
         if (!this.isUsingExternalTransactions()) {
             return super.runInTransaction(operation);
         } else {
             if (TransactionSynchronizationManager.isActualTransactionActive()) {
                 return operation.transform(null);
             }
+            // force the transaction execution
+            // TODO [devacfr] maybe not good idea
             TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
             return transationOperation.execute(transactionDefinition, new TransactionCallback<Object>() {
 
                 @Override
-                public Object doInTransaction(TransactionStatus status) {
+                public Object doInTransaction(final TransactionStatus status) {
                     return operation.transform(status);
                 }
             });
@@ -73,7 +97,7 @@ public class SpringDataDomain extends DataDomain {
     }
 
     @Override
-    GraphDiff onSyncRollback(ObjectContext originatingContext) {
+    GraphDiff onSyncRollback(@Nonnull final ObjectContext originatingContext) {
         // [devacfr] remove local rollback transaction
         return new CompoundDiff();
     }

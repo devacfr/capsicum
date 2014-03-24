@@ -18,6 +18,7 @@ package org.cfr.capsicum.access;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
@@ -28,8 +29,8 @@ import org.apache.cayenne.query.Query;
 import org.cfr.capsicum.datasource.TransactionAwareDataSourceProxy;
 
 /**
- * 
- * @author devacfr
+ * This class extends {@link DataNode} but remove all transaction action.
+ * @author devacfr<christophefriederich@mac.com>
  * @since 1.0
  */
 public class SpringDataNode extends DataNode {
@@ -45,7 +46,7 @@ public class SpringDataNode extends DataNode {
      * 
      * @param name the datanode name
      */
-    public SpringDataNode(final String name) {
+    public SpringDataNode(@Nullable final String name) {
         super(name);
     }
 
@@ -61,15 +62,16 @@ public class SpringDataNode extends DataNode {
      * {@inheritDoc}
      */
     @Override
-    public void setDataSource(final DataSource dataSource) {
+    public void setDataSource(@Nonnull final DataSource dataSource) {
         this.dataSource = createTransactionAwareDataSource(dataSource);
     }
 
     /**
-     * 
+     * create a datasource  participating in Spring-managed transactions.
      * @param ds datasource
      * @return Returns new Datasource if necessary, adding awareness of Spring-managed transactions.
      */
+    @Nonnull
     protected DataSource createTransactionAwareDataSource(@Nullable final DataSource ds) {
         if (ds != null) {
             return new TransactionAwareDataSourceProxy(ds);
@@ -78,7 +80,8 @@ public class SpringDataNode extends DataNode {
     }
 
     @Override
-    public void performQueries(final Collection<? extends Query> queries, final OperationObserver callback) {
+    public void performQueries(@Nonnull final Collection<? extends Query> queries,
+                               @Nonnull final OperationObserver callback) {
         if (schemaUpdateStrategy != null) {
             try {
                 schemaUpdateStrategy.updateSchema(this);
@@ -86,6 +89,7 @@ public class SpringDataNode extends DataNode {
                 new CayenneRuntimeException(e);
             }
         }
+        // TODO [devacfr] do not user super methohs, but put here only useful code 
         super.performQueries(queries, callback);
     }
 }

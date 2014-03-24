@@ -15,19 +15,23 @@
  */
 package org.apache.cayenne.access;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.query.Query;
 
 /**
- * 
+ * This implementation derive from {@link DataContext} and remove all transaction actions.
  * @author devacfr<christophefriederich@mac.com>
  * @since 1.0
+ * @see DataContext
  */
 public class SpringDataContext extends DataContext {
 
     /**
-     * 
+     * serial id.
      */
     private static final long serialVersionUID = -6647366270086179134L;
 
@@ -43,8 +47,8 @@ public class SpringDataContext extends DataContext {
      * @param channel the data channel.
      * @param objectStore the object store.
      */
-    public SpringDataContext(final DataChannel channel, final ObjectStore objectStore) {
-        super(null, null);
+    public SpringDataContext(@Nullable final DataChannel channel, @Nullable final ObjectStore objectStore) {
+        super(channel, objectStore);
     }
 
     /**
@@ -65,7 +69,8 @@ public class SpringDataContext extends DataContext {
      */
     @SuppressWarnings("rawtypes")
     @Override
-    public ResultIterator performIteratedQuery(final Query query) {
+    public ResultIterator performIteratedQuery(@Nonnull final Query query) {
+        // remove all transaction manual actions
         //TODO [devacfr] not need special transaction
         return internalPerformIteratedQuery(query);
 

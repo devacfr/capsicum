@@ -1,19 +1,4 @@
-/**
- * Copyright 2014 devacfr<christophefriederich@mac.com>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package org.cfr.capsicum.configuration;
+package org.cfr.capsicum;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,10 +6,10 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.SpringDataDomain;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
@@ -50,103 +35,56 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cfr.capsicum.access.SpringDataNode;
 
 /**
- * A {@link org.apache.cayenne.DataChannel} provider that provides a single instance of DataDomain configured
+ * A {@link DataChannel} provider that provides a single instance of DataDomain configured
  * per configuration supplied via injected {@link DataChannelDescriptorLoader}.
- * <p>Note this implementation allows overriding the creation of {@link DataNode}, {@link DataDomain}
- * @version 3.2M1
- * @since 1.0
+ * 
+ * @since 3.1
  */
 public class DataDomainProvider implements Provider<DataDomain> {
 
-    /**
-     * 
-     */
     private static Log logger = LogFactory.getLog(DataDomainProvider.class);
 
-    /**
-     * 
-     */
     @Inject
     protected ResourceLocator resourceLocator;
 
-    /**
-     * 
-     */
     @Inject
     protected DataChannelDescriptorMerger descriptorMerger;
 
-    /**
-     * 
-     */
     @Inject
     protected DataChannelDescriptorLoader loader;
 
-    /**
-     * 
-     */
     @Inject
     protected SchemaUpdateStrategy defaultSchemaUpdateStrategy;
 
-    /**
-     * 
-     */
     @Inject
     protected DbAdapterFactory adapterFactory;
 
-    /**
-     * 
-     */
     @Inject
     protected DataSourceFactory dataSourceFactory;
 
-    /**
-     * 
-     */
     @Inject
     protected AdhocObjectFactory objectFactory;
 
-    /**
-     * 
-     */
     @Inject(Constants.SERVER_DOMAIN_FILTERS_LIST)
     protected List<DataChannelFilter> filters;
 
-    /**
-     * 
-     */
     @Inject(Constants.SERVER_PROJECT_LOCATIONS_LIST)
     protected List<String> locations;
 
-    /**
-     * 
-     */
     @Inject
     protected Injector injector;
 
-    /**
-     * 
-     */
     @Inject
     protected JdbcEventLogger jdbcEventLogger;
 
-    /**
-     * 
-     */
     @Inject
     protected QueryCache queryCache;
 
-    /**
-     * 
-     */
     @Inject
     protected RuntimeProperties runtimeProperties;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DataDomain get() throws ConfigurationException {
 
@@ -159,29 +97,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
     }
 
-    /**
-     * Create a Specific {@link DataDomain}.
-     * @param name name of DataDomain.
-     * @return Returns new DataDomain.
-     */
-    protected DataDomain createDataDomain(final String name) {
-        return new SpringDataDomain(name);
+    protected DataDomain createDataDomain(String name) {
+        return new DataDomain(name);
     }
 
-    /**
-     * Create a Specific {@link DataNode}.
-     * @param name name of DataNode.
-     * @return Return new DataNode.
-     */
-    protected DataNode createDataNode(final String name) {
-        return new SpringDataNode(name);
-    }
-
-    /**
-     * 
-     * @return Returns new initialized DataDomain.
-     * @throws Exception Raise during initilialization of DataDomain.
-     */
     protected DataDomain createAndInitDataDomain() throws Exception {
 
         if (locations == null || locations.isEmpty()) {
@@ -247,8 +166,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         dataDomain.getEntityResolver().applyObjectLayerDefaults();
 
         for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
-            //TODO [devacfr] just add DataNode factory method. Ask change to Cayenne Team
-            DataNode dataNode = createDataNode(nodeDescriptor.getName());
+            DataNode dataNode = new DataNode(nodeDescriptor.getName());
 
             dataNode.setJdbcEventLogger(jdbcEventLogger);
             dataNode.setDataSourceLocation(nodeDescriptor.getParameters());

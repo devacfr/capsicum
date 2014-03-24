@@ -42,6 +42,10 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 public class CayenneTemplate extends CayenneAccessor implements ICayenneOperations {
 
+    /**
+     * Create new instance.
+     * @param cayenneRuntimeFactory
+     */
     public CayenneTemplate(@Nonnull final ICayenneRuntimeContext cayenneRuntimeFactory) {
         super(cayenneRuntimeFactory);
     }
@@ -177,8 +181,7 @@ public class CayenneTemplate extends CayenneAccessor implements ICayenneOperatio
     }
 
     public void registerNewObject(Object object) {
-        if (object instanceof CayenneDataObject
-                && ((CayenneDataObject) object).getObjectContext() == null) {
+        if (object instanceof CayenneDataObject && ((CayenneDataObject) object).getObjectContext() == null) {
             getObjectContext().registerNewObject(object);
         }
     }
