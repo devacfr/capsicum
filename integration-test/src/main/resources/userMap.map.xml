@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+	 project-version="6">
+	<property name="defaultPackage" value="org.cfr.capsicum.domain.user"/>
+	<db-entity name="ADDRESS">
+		<db-attribute name="CITY" type="VARCHAR" isMandatory="true" length="255"/>
+		<db-attribute name="COUNTRY" type="VARCHAR" length="255"/>
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="STREET" type="VARCHAR" isMandatory="true" length="255"/>
+		<db-attribute name="USER_FK" type="BIGINT" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="USER_TABLE">
+		<db-attribute name="FIRST_NAME" type="VARCHAR" isMandatory="true" length="255"/>
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="LAST_NAME" type="VARCHAR" isMandatory="true" length="255"/>
+	</db-entity>
+	<obj-entity name="Address" className="org.cfr.capsicum.domain.user.Address" dbEntityName="ADDRESS">
+		<obj-attribute name="city" type="java.lang.String" db-attribute-path="CITY"/>
+		<obj-attribute name="country" type="java.lang.String" db-attribute-path="COUNTRY"/>
+		<obj-attribute name="street" type="java.lang.String" db-attribute-path="STREET"/>
+	</obj-entity>
+	<obj-entity name="User" className="org.cfr.capsicum.domain.user.User" dbEntityName="USER_TABLE">
+		<obj-attribute name="firstName" type="java.lang.String" db-attribute-path="FIRST_NAME"/>
+		<obj-attribute name="lastName" type="java.lang.String" db-attribute-path="LAST_NAME"/>
+	</obj-entity>
+	<db-relationship name="USER" source="ADDRESS" target="USER_TABLE" toMany="false">
+		<db-attribute-pair source="USER_FK" target="ID"/>
+	</db-relationship>
+	<db-relationship name="ADDRESSES" source="USER_TABLE" target="ADDRESS" toMany="true">
+		<db-attribute-pair source="ID" target="USER_FK"/>
+	</db-relationship>
+	<obj-relationship name="user" source="Address" target="User" deleteRule="Nullify" db-relationship-path="USER"/>
+	<obj-relationship name="addresses" source="User" target="Address" deleteRule="Deny" db-relationship-path="ADDRESSES"/>
+</data-map>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:util="http://www.springframework.org/schema/util" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+    <context:annotation-config />
+    
+    <context:component-scan base-package="org.cfr.capsicum" />
+
+    <tx:annotation-driven transaction-manager="transactionManager"
+        mode="proxy" />
+
+    <!-- create an embedded Derby database -->
+    <bean id="dataSource"
+        class="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactoryBean">
+        <property name="databaseType" value="DERBY" />
+        <property name="databaseName" value="test-db" />
+    </bean>
+
+
+    <bean id="transactionManager" class="org.cfr.capsicum.datasource.CayenneTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="CayenneRuntimeFactory" class="org.cfr.capsicum.server.ServerRuntimeFactoryBean">
+        <property name="transactionManager" ref="transactionManager" />
+        <property name="defaultSchemaUpdateStrategy"
+            value="org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy" />
+        <property name="dataDomainDefinitions">
+            <list value-type="org.cfr.capsicum.configuration.DataDomainDefinition">
+                <bean
+                    class="org.cfr.capsicum.configuration.DataDomainDefinition">
+                    <property name="name" value="user" />
+                    <property name="domainResource" value="classpath:cayenne-user.xml" />
+                </bean>
+                <!-- <bean class="com.pmi.cayenne.configuration.DataDomainDefinition"> -->
+                <!-- <property name="name" value="CoreDomain" /> -->
+                <!-- <property name="domainResource" value="classpath:cayenne-profil.xml" 
+                    /> -->
+                <!-- </bean> -->
+            </list>
+        </property>
+    </bean>
+
+</beans>

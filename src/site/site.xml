@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="${project.name}" xmlns="http://maven.apache.org/DECORATION/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+    
+    <!--  Sample, See
+        - http://books.sonatype.com/mvnref-book/reference/site-generation-sect-dir-struct.html
+        - https://maven.apache.org/guides/mini/guide-site.html
+        - http://starobjects.sourceforge.net/m2-site/main/documentation/docbkx/html/developers-guide/ch08.html     
+        - http://blog.netapsys.fr/index.php/post/2010/04/10/Plus-loin-avec-le-Maven-Site   
+     -->
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.2.1</version>
+    </skin>
+    <custom>
+        <fluidoSkin>
+            <sideBarEnabled>true</sideBarEnabled>
+        </fluidoSkin>
+    </custom>
+    <body>
+        <menu name="Main">
+            <item name="Overview" href="overview.html" />
+        </menu>
+
+        <menu ref="modules" inherit="bottom" />
+        
+        <menu name="Configuration Management">
+            <item name="Issue Tracking Management" href="issue-tracking.html" />
+            <item name="Continuous Integration" href="integration.html" />
+            <item name="Distribution Management" href="distribution-management.html" />
+            <item name="Project Team" href="team-list.html" />
+        </menu>
+        
+        <menu name="Projects Reports">
+            <item name="Checkstyle Report" href="checkstyle-aggregate.html"/>
+            <item name="Surefire Report" href="surefire-report.html"/>
+        </menu>
+        
+    </body>
+</project>
