@@ -18,61 +18,75 @@ package org.cfr.capsicum;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.cfr.capsicum.configuration.DataDomainDefinition;
-import org.cfr.capsicum.datasource.CayenneTransactionManager;
-import org.cfr.capsicum.datasource.ITransactionOperationSupport;
+import org.apache.cayenne.access.DataNode;
+import org.cfr.capsicum.access.DataDomainDefinition;
 
 /**
- * 
+ *
  * @author devacfr
  * @since 1.0
  */
-public interface ICayenneRuntimeContext extends DataSourceFactory, ITransactionOperationSupport {
+public interface ICayenneRuntimeContext {
 
     /**
-     * 
+     *
+     * @param name
      * @return
      */
+    @Nonnull
+    DataDomain createDataDomain(@Nonnull String name);
+
+    /**
+     *
+     * @param name
+     * @return
+     */
+    @Nonnull
+    DataNode createDataNode(@Nonnull final String name);
+
+    /**
+     *
+     * @return
+     */
+    @Nonnull
     ObjectContext createObjectContext();
 
     /**
-     * 
+     *
      * @return
      */
     boolean isServerMode();
 
     /**
-     * 
+     *
      * @return
      */
+    @Nonnull
     List<DataDomainDefinition> getDataDomainDefinitions();
 
     /**
-     * 
+     *
      * @return
      */
+    @Nonnull
     DataDomain getDataDomain();
 
     /**
-     * @throws SQLException 
-     * 
+     *
+     * @throws SQLException
      */
     void updateDatabaseSchema() throws SQLException;
 
     /**
      * Gets instance from cayenne DI according to binding declaration.
-     * @param classType Class type of instance 
+     * @param classType Class type of instance
      * @return Returns instance from cayenne DI according to bind declaration
+     * @param <T> Type class existing in cayenne DI
      */
     <T> T getInstance(Class<T> classType);
-
-    /**
-     * 
-     * @return
-     */
-    CayenneTransactionManager getTransactionManager();
 
 }

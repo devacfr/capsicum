@@ -20,6 +20,10 @@ import java.sql.SQLException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.exp.ExpressionException;
+import org.cfr.capsicum.spring.support.CayenneExpressionException;
+import org.cfr.capsicum.spring.support.CayenneOperationException;
+import org.cfr.capsicum.spring.support.CayenneOptimisticLockingFailureException;
+import org.cfr.capsicum.spring.support.ExceptionTranslator;
 import org.cfr.commons.testing.EasyMockTestCase;
 import org.junit.Test;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
@@ -33,6 +37,7 @@ public class ExceptionTranslatorTest extends EasyMockTestCase {
 
         ExceptionTranslator translator = new ExceptionTranslator();
         SQLExceptionTranslator sqlTranslator = mock(SQLExceptionTranslator.class);
+        replay();
 
         translator.setJdbcExceptionTranslator(sqlTranslator);
         assertSame(sqlTranslator, translator.getJdbcExceptionTranslator());

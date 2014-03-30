@@ -20,7 +20,6 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.cfr.capsicum.ICayenneRuntimeContext;
-import org.cfr.capsicum.configuration.DataDomainDefinition;
 import org.cfr.commons.testing.EasyMockTestCase;
 import org.junit.Test;
 

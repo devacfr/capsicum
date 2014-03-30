@@ -27,7 +27,9 @@ import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.cfr.capsicum.ICayenneRuntimeContext;
+import org.cfr.capsicum.access.DataDomainDefinition;
 import org.cfr.capsicum.access.DomainTestHelper;
+import org.cfr.capsicum.configuration.DecoratorDataChannelDescriptorLoader;
 import org.cfr.commons.testing.EasyMockTestCase;
 import org.cfr.commons.util.ResourceUtils;
 import org.cfr.commons.util.collection.CollectionBuilder;
@@ -37,10 +39,10 @@ public class DecoratorDataChannelDescriptorLoaderTest extends EasyMockTestCase {
 
     @Test
     public void load() throws FileNotFoundException {
-        Resource resource = new URLResource(ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX + getPackageName()
-                + "/cayenne-test.xml"));
+        Resource resource = new URLResource(ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX
+                + getPackageName() + "/cayenne-test.xml"));
         ICayenneRuntimeContext cayenneRuntimeContext = mock(ICayenneRuntimeContext.class);
-        expect(cayenneRuntimeContext.getDataDomainDefinitions()).andReturn(CollectionBuilder.list((DomainTestHelper.domainTestOk())));
+        expect(cayenneRuntimeContext.getDataDomainDefinitions()).andReturn(CollectionBuilder.<DataDomainDefinition> list(DomainTestHelper.domainTestOk()));
 
         DataChannelDescriptorLoader delegate = new XMLDataChannelDescriptorLoader() {
 
@@ -53,7 +55,7 @@ public class DecoratorDataChannelDescriptorLoaderTest extends EasyMockTestCase {
             }
         };
         DecoratorDataChannelDescriptorLoader loader = new DecoratorDataChannelDescriptorLoader(cayenneRuntimeContext,
-                delegate);
+            delegate);
 
         replay();
 
@@ -63,11 +65,11 @@ public class DecoratorDataChannelDescriptorLoaderTest extends EasyMockTestCase {
 
     @Test(expected = ConfigurationException.class)
     public void loadWrongDomain() throws FileNotFoundException {
-        Resource resource = new URLResource(ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX + getPackageName()
-                + "/cayenne-test.xml"));
+        Resource resource = new URLResource(ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX
+                + getPackageName() + "/cayenne-test.xml"));
         ICayenneRuntimeContext cayenneRuntimeContext = mock(ICayenneRuntimeContext.class);
         // Give a wrong domain, ie wrong name
-        expect(cayenneRuntimeContext.getDataDomainDefinitions()).andReturn(CollectionBuilder.list((DomainTestHelper.domainOk())))
+        expect(cayenneRuntimeContext.getDataDomainDefinitions()).andReturn(CollectionBuilder.<DataDomainDefinition> list(DomainTestHelper.domainOk()))
                 .once();
 
         DataChannelDescriptorLoader delegate = new XMLDataChannelDescriptorLoader() {
@@ -91,12 +93,12 @@ public class DecoratorDataChannelDescriptorLoaderTest extends EasyMockTestCase {
 
     @Test(expected = FileNotFoundException.class)
     public void loadWrongDomainFile() throws Throwable {
-        Resource resource = new URLResource(ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX + getPackageName()
-                + "/cayenne-wrong.xml"));
+        Resource resource = new URLResource(ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX
+                + getPackageName() + "/cayenne-wrong.xml"));
         ICayenneRuntimeContext cayenneRuntimeContext = mock(ICayenneRuntimeContext.class);
         // Give a wrong domain, ie wrong name
-        expect(cayenneRuntimeContext.getDataDomainDefinitions()).andReturn(CollectionBuilder.list((DomainTestHelper.domainOk())))
-                .once();
+        expect(cayenneRuntimeContext.getDataDomainDefinitions()).andReturn(CollectionBuilder.<DataDomainDefinition> list(DomainTestHelper.domainOk()))
+        .once();
 
         DataChannelDescriptorLoader delegate = new XMLDataChannelDescriptorLoader() {
 
@@ -109,7 +111,7 @@ public class DecoratorDataChannelDescriptorLoaderTest extends EasyMockTestCase {
             }
         };
         DecoratorDataChannelDescriptorLoader loader = new DecoratorDataChannelDescriptorLoader(cayenneRuntimeContext,
-                delegate);
+            delegate);
 
         replay();
         try {

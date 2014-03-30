@@ -90,6 +90,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax.inject.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.cfr.commons</groupId>
                 <artifactId>commons-util</artifactId>
                 <version>${org.cfr.commons.version}</version>

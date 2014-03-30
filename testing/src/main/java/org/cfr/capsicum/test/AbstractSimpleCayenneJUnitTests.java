@@ -27,8 +27,9 @@ import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
 import org.cfr.capsicum.ICayenneRuntimeContext;
-import org.cfr.capsicum.configuration.DataDomainDefinition;
-import org.cfr.capsicum.server.ServerRuntimeFactoryBean;
+import org.cfr.capsicum.access.CustomDataDomainDefinition;
+import org.cfr.capsicum.access.DataDomainDefinition;
+import org.cfr.capsicum.spring.server.ServerRuntimeFactoryBean;
 import org.cfr.commons.util.Assert;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -36,8 +37,6 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.Log4jConfigurer;
 
@@ -128,15 +127,14 @@ public abstract class AbstractSimpleCayenneJUnitTests extends EasyMockTestCase {
 
     @SuppressWarnings("unchecked")
     protected ICayenneRuntimeContext createCayenneContext() throws Exception {
-        ResourceLoader resourceLoader = new DefaultResourceLoader();
         ServerRuntimeFactoryBean factory = new ServerRuntimeFactoryBean();
         factory.setDefaultSchemaUpdateStrategy((Class<SchemaUpdateStrategy>) (overrideStrategy != null
                 ? overrideStrategy : CreateIfNoSchemaStrategy.class));
         factory.setDataSource(createDatasource());
-        DataDomainDefinition dataDomainDefinition = new DataDomainDefinition();
+        CustomDataDomainDefinition dataDomainDefinition = new CustomDataDomainDefinition();
         dataDomainDefinition.setName(domainName);
-        dataDomainDefinition.setDomainResource(resourceLoader.getResource(domainFileLocation));
-        factory.setDataDomainDefinitions(Lists.newArrayList(dataDomainDefinition));
+        dataDomainDefinition.setLocation(domainFileLocation);
+        factory.setDataDomainDefinitions(Lists.<DataDomainDefinition> newArrayList(dataDomainDefinition));
         factory.afterPropertiesSet();
         return factory;
     }

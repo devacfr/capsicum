@@ -25,7 +25,6 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.commons.lang.StringUtils;
 import org.cfr.capsicum.ICayenneRuntimeContext;
-import org.cfr.capsicum.configuration.DataDomainDefinition;
 import org.cfr.commons.util.Assert;
 
 /**
@@ -60,11 +59,11 @@ public abstract class DataDomainUtilities {
     }
 
     /**
-     * Finds the datadomain definition is the specified domain name paramter. 
+     * Finds the datadomain definition is the specified domain name paramter.
      * @param domainName the domain name to find
      * @param runtime cayenne runtime context
-     * @return Returns the datadomain definition is the specified domain name paramter, 
-     * otherwise <code>null</code> 
+     * @return Returns the datadomain definition is the specified domain name paramter,
+     * otherwise <code>null</code>
      */
     public static DataDomainDefinition findDataDomainDefinition(@Nonnull final ICayenneRuntimeContext runtime,
                                                                 @Nullable final String domainName) {
@@ -81,7 +80,7 @@ public abstract class DataDomainUtilities {
     }
 
     /**
-     * Finds the datadomain definition associated to dataNodeDescriptor paramter. 
+     * Finds the datadomain definition associated to dataNodeDescriptor paramter.
      * @param dataNodeDescriptor the datanodedescriptor
      * @param runtime cayenne runtime context
      * @return Returns the datadomain definition associated to dataNodeDescriptor paramter,

@@ -30,7 +30,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.cfr.capsicum.ICayenneRuntimeContext;
 
 /**
- * 
+ *
  * @author devacfr
  * @since 1.0
  */
@@ -104,7 +104,7 @@ public class CountHelper {
                 sql = sql.substring(0, ordering);
             }
             return "SELECT COUNT(*)"
-                    + sql;
+            + sql;
         }
     }
 

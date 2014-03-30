@@ -24,8 +24,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.cfr.capsicum.ICayenneRuntimeContext;
-import org.cfr.capsicum.core.CayenneTemplate;
-import org.cfr.capsicum.core.ICayenneCallback;
+import org.cfr.capsicum.spring.support.CayenneTemplate;
+import org.cfr.capsicum.spring.support.ICayenneCallback;
 import org.cfr.commons.util.Assert;
 
 public class CayennePropertySetDAOImpl extends CayenneTemplate implements ICayennePropertySetDAO {

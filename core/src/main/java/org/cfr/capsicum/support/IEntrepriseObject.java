@@ -15,6 +15,8 @@
  */
 package org.cfr.capsicum.support;
 
+import org.cfr.capsicum.spring.support.CayenneOperationException;
+
 public interface IEntrepriseObject {
 
     /**

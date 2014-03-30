@@ -25,11 +25,11 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.dba.DbAdapter;
 import org.cfr.capsicum.ICayenneRuntimeContext;
-import org.cfr.capsicum.configuration.DataDomainDefinition;
-import org.cfr.capsicum.server.ServerRuntimeFactoryBean;
+import org.cfr.capsicum.access.CustomDataDomainDefinition;
+import org.cfr.capsicum.access.DataDomainDefinition;
+import org.cfr.capsicum.spring.server.ServerRuntimeFactoryBean;
 import org.cfr.commons.util.Assert;
 import org.cfr.commons.util.ClassLoaderUtils;
-import org.springframework.core.io.DefaultResourceLoader;
 
 import com.google.common.collect.Lists;
 
@@ -62,36 +62,34 @@ public class CayenneRuntimeContextProvider implements ICayenneConfigurationProvi
     @SuppressWarnings("unchecked")
     @Override
     public void setup(Map<String, Object> configurationProperties) {
-        DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         if (this.cayenneRuntimeContext != null) {
             throw new RuntimeException("CayenneRuntimeContextProvider is already configured.");
         }
         ServerRuntimeFactoryBean factory = new ServerRuntimeFactoryBean();
-        DataDomainDefinition dataDomainDefinition = new DataDomainDefinition();
-        dataDomainDefinition.setDomainResource(resourceLoader.getResource("classpath:cayenne-propertyset.xml"));
-        factory.setDataDomainDefinitions(Lists.newArrayList(dataDomainDefinition));
-        dataDomainDefinition.setName(DOMAIN_NAME);
 
         Iterator<String> itr = configurationProperties.keySet().iterator();
         while (itr.hasNext()) {
+            CustomDataDomainDefinition.Builder dataDomainDefinition = CustomDataDomainDefinition.builder()
+                    .location("classpath:cayenne-propertyset.xml")
+                    .name(DOMAIN_NAME);
             String key = itr.next();
 
             if (key.startsWith(ICayenneConfigurationProvider.DATASOURCE_PROPERTY_KEY)) {
-                dataDomainDefinition.setDataSource((DataSource) configurationProperties.get(key));
+                dataDomainDefinition.dataSource((DataSource) configurationProperties.get(key));
                 factory.setDataSource((DataSource) configurationProperties.get(key));
             }
             if (key.startsWith(ICayenneConfigurationProvider.ADAPTER_PROPERTY_KEY)) {
                 try {
-                    dataDomainDefinition.setAdapterClass((Class<? extends DbAdapter>) ClassLoaderUtils.loadClass((String) configurationProperties.get(key),
+                    dataDomainDefinition.adapterClass((Class<? extends DbAdapter>) ClassLoaderUtils.loadClass((String) configurationProperties.get(key),
                         this.getClass()));
                 } catch (ClassNotFoundException e) {
                     throw new CayenneRuntimeException(e);
                 }
             }
             if (key.startsWith(ICayenneConfigurationProvider.SCHEMA_UPDATE_STRATEGY_PROPERTY_KEY)) {
-                dataDomainDefinition.setSchemaUpdateStrategy((Class<? extends SchemaUpdateStrategy>) configurationProperties.get(key));
+                dataDomainDefinition.schemaUpdateStrategy((Class<? extends SchemaUpdateStrategy>) configurationProperties.get(key));
             }
-
+            factory.setDataDomainDefinitions(Lists.<DataDomainDefinition> newArrayList(dataDomainDefinition.buidl()));
         }
         try {
             factory.afterPropertiesSet();

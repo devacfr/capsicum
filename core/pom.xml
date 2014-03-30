@@ -16,8 +16,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.cfr.commons</groupId>
             <artifactId>commons-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -65,17 +73,78 @@
             <version>${spring.version}</version>
             <optional>true</optional>
         </dependency>
-        <!-- Test dependencies -->
 
+
+        <!-- Test dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.cfr.commons</groupId>
             <artifactId>commons-testing</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.5.3.0_1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.cayenne.plugins</groupId>
+                <artifactId>maven-cayenne-plugin</artifactId>
+                <version>${maven-cayenne-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>user-generation</id>
+                        <configuration>
+                            <map>${basedir}/src/test/resources/datamap.map.xml</map>
+                            <destDir>${project.build.directory}/cayenne-generated</destDir>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                        <goals>
+                            <goal>cgen</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/cayenne-generated</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </testResource>
+        </testResources>
+    </build>
 </project>

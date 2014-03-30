@@ -20,7 +20,7 @@ import java.util.Collection;
 import javax.annotation.Nonnull;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.TransactionalDataDomain;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
@@ -28,11 +28,12 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.resource.Resource;
 import org.cfr.capsicum.ICayenneRuntimeContext;
+import org.cfr.capsicum.access.DataDomainDefinition;
 import org.cfr.capsicum.access.DataDomainUtilities;
 import org.cfr.commons.util.Assert;
 
 /**
- * This class allows override  values of {@link DataDomain} configured in xml file.  
+ * This class allows override  values of {@link TransactionalDataDomain} configured in xml file.
  * @author devacfr<christophefriederich@mac.com>
  * @since 1.0
  * @see DataChannelDescriptorLoader
@@ -40,18 +41,18 @@ import org.cfr.commons.util.Assert;
 public class DecoratorDataChannelDescriptorLoader implements DataChannelDescriptorLoader {
 
     /**
-     * 
+     *
      */
     private final ICayenneRuntimeContext cayenneRuntimeContext;
 
     /**
-     * 
+     *
      */
     @Inject("DefaultXMLDataChannelDescriptorLoader")
     protected DataChannelDescriptorLoader delegate;
 
     /**
-     * 
+     *
      * @param cayenneRuntimeContext Cayenne runtime context.
      * @param delegate delegate allowing to load configuration.
      */
@@ -62,7 +63,7 @@ public class DecoratorDataChannelDescriptorLoader implements DataChannelDescript
     }
 
     /**
-     * 
+     *
      * @param cayenneRuntimeContext Cayenne runtime context.
      */
     public DecoratorDataChannelDescriptorLoader(@Nonnull final ICayenneRuntimeContext cayenneRuntimeContext) {
@@ -77,23 +78,15 @@ public class DecoratorDataChannelDescriptorLoader implements DataChannelDescript
             throws ConfigurationException {
         Assert.notNull(delegate, "DataChannelDescriptor delegate loader is required");
         ConfigurationTree<DataChannelDescriptor> descriptor = delegate.load(configurationResource);
-        // TODO [devacfr] it is not necessary true, -> investigate
-        descriptor.getRootNode().getProperties().put(DataDomain.USING_EXTERNAL_TRANSACTIONS_PROPERTY, "true");
 
         DataDomainDefinition dataDomainDefinition = DataDomainUtilities.findDataDomainDefinition(cayenneRuntimeContext,
             descriptor.getRootNode().getName());
         if (dataDomainDefinition != null) {
+
             Collection<DataNodeDescriptor> dataNodeDescriptors = descriptor.getRootNode().getNodeDescriptors();
             for (DataNodeDescriptor dataNodeDescriptor : dataNodeDescriptors) {
                 if (configurationResource.equals(dataNodeDescriptor.getConfigurationSource())) {
-                    if (dataDomainDefinition.getSchemaUpdateStrategy() != null) {
-                        dataNodeDescriptor.setSchemaUpdateStrategyType(dataDomainDefinition.getSchemaUpdateStrategy()
-                                .getName());
-                    }
-                    dataNodeDescriptor.setDataSourceFactoryType(cayenneRuntimeContext.getClass().getName());
-                    if (dataDomainDefinition.getAdapterClass() != null) {
-                        dataNodeDescriptor.setAdapterType(dataDomainDefinition.getAdapterClass().getName());
-                    }
+                    dataDomainDefinition.configure(cayenneRuntimeContext, dataNodeDescriptor);
                 }
             }
         } else {
