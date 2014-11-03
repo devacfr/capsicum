@@ -13,7 +13,8 @@
 
     <properties>
         <commons-dbcp.version>1.2.2</commons-dbcp.version>
-        <main.basedir>${project.parent.basedir}</main.basedir>
+        <!-- Enable report aggregation -->
+        <aggregate>true</aggregate>
     </properties>
 
     <dependencies>
@@ -50,4 +51,15 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

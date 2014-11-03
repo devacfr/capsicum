@@ -12,7 +12,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <main.basedir>${project.parent.basedir}</main.basedir>
+       <!-- Enable report aggregation -->
+        <aggregate>true</aggregate>
     </properties>
 
     <dependencies>
@@ -69,6 +70,12 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-pmd-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

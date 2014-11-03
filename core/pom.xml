@@ -11,7 +11,8 @@
     <description>Spring orm implementation for cayenne framework</description>
     <packaging>jar</packaging>
     <properties>
-        <main.basedir>${project.parent.basedir}</main.basedir>
+        <!-- Enable report aggregation -->
+        <aggregate>true</aggregate>
     </properties>
 
     <dependencies>
@@ -122,6 +123,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${maven-build-helper-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -135,6 +137,12 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-pmd-plugin</artifactId>
             </plugin>
         </plugins>
         <testResources>

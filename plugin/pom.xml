@@ -11,9 +11,10 @@
     <description>This module allows to plug cayenne domain in pluggable application</description>
     <properties>
         <atlassian-plugins.version>3.0.13</atlassian-plugins.version>
-        <main.basedir>${project.parent.basedir}</main.basedir>
+        <!-- Enable report aggregation -->
+        <aggregate>true</aggregate>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.atlassian.plugins</groupId>
@@ -26,4 +27,15 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
