@@ -59,7 +59,7 @@
         <hessian.version>3.1.6</hessian.version>
         <opensymphony-propertyset.version>1.5</opensymphony-propertyset.version>
         <opensymphony.oscore.version>2.2.7</opensymphony.oscore.version>
-        <xstream.version>1.4.16</xstream.version>
+        <xstream.version>1.4.17</xstream.version>
 
         <!-- Plugin versions -->
         <maven-cayenne-plugin.version>${cayenne.version}</maven-cayenne-plugin.version>
